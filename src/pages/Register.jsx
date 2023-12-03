@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -12,7 +12,8 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { Link as RouterLink } from 'react-router-dom';
+import { Navigate, Link as RouterLink } from 'react-router-dom';
+import axiosInstance from '../components/auth/axiosInstance';
 
 function Copyright(props) {
   return (
@@ -32,13 +33,32 @@ function Copyright(props) {
 const defaultTheme = createTheme();
 
 export default function SignUp() {
+  const [registered, setRegistered] = useState(false)
+
   const handleSubmit = (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+    const formData = new FormData(event.currentTarget);
+    const data = {
+      "email": formData.get('email'),
+      "username": formData.get('email'),
+      "password": formData.get('password'),
+      "firstname": formData.get('firstName'),
+      "lastname": formData.get('lastName'),
+    }
+    handleRegister(data)
+    console.log(data);
+  };
+
+  const handleRegister = async (data) => {
+    try {
+      const response = await axiosInstance.post('/register', data);
+      if (response.status === 201) {
+        setRegistered(true)
+      }
+
+    } catch (error) {
+      console.error('Login failed:', error);
+    }
   };
 
   return (
@@ -130,6 +150,9 @@ export default function SignUp() {
         </Box>
         <Copyright sx={{ mt: 5 }} />
       </Container>
+      {
+        registered && <Navigate to={"/login"} />
+      }
     </ThemeProvider>
   );
 }

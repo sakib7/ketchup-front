@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -13,6 +13,9 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Link as RouterLink } from 'react-router-dom';
+import { useAuth } from '../components/auth/AuthContext';
+import axiosInstance from '../components/auth/axiosInstance';
+import { Navigate } from 'react-router-dom';
 
 function Copyright(props) {
   return (
@@ -32,13 +35,29 @@ function Copyright(props) {
 const defaultTheme = createTheme();
 
 export default function SignIn() {
+  const { token, login } = useAuth();
+
   const handleSubmit = (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+    const formData = new FormData(event.currentTarget);
+
+    const data = {
+      "username": formData.get('email'),
+      "password": formData.get('password')
+    }
+    handleLogin(data)
+    console.log(data);
+  };
+
+  const handleLogin = async (data) => {
+    try {
+      const response = await axiosInstance.post('/login', data);
+      const { access } = response.data;
+      login(access);
+
+    } catch (error) {
+      console.error('Login failed:', error);
+    }
   };
 
   return (
@@ -109,6 +128,9 @@ export default function SignIn() {
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />
       </Container>
+      {
+        token && < Navigate to="/profile" />
+      }
     </ThemeProvider>
   );
 }
