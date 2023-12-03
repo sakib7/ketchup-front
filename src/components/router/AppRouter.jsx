@@ -11,6 +11,7 @@ import EventStepper from '../../pages/EventCreation/EventStepper.jsx'
 import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
 import AppBarNav from './AppBarNav.jsx';
 import BottomNav from './BottomNav.jsx';
+import ProfileView from '../../pages/ProfileView.jsx';
 
 const PrivateRoute = ({ element }) => {
   const { token } = useAuth();
@@ -41,10 +42,10 @@ const AppRouter = () => {
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/create-event" element={<EventStepper />} />
-              {/* <Route
-              path="/dashboard"
-              element={<PrivateRoute element={<Dashboard />} />}
-            /> */}
+              <Route
+                path="/profile"
+                element={<PrivateRoute element={<ProfileView />} />}
+              />
             </Routes>
           </div>
           <BottomNav />
