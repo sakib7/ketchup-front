@@ -12,6 +12,9 @@ import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
 import AppBarNav from './AppBarNav.jsx';
 import BottomNav from './BottomNav.jsx';
 import ProfileView from '../../pages/ProfileView.jsx';
+import EditProfile from '../../pages/EditProfile.jsx';
+import ProfileViewBusiness from '../../pages/ProfileViewBusiness.jsx';
+import EditProfileBusiness from '../../pages/EditProfileBusiness.jsx';
 
 const PrivateRoute = ({ element }) => {
   const { token } = useAuth();
@@ -43,8 +46,16 @@ const AppRouter = () => {
               <Route path="/register" element={<Register />} />
               <Route path="/create-event" element={<EventStepper />} />
               <Route
-                path="/profile"
-                element={<PrivateRoute element={<ProfileView />} />}
+                path="/profile"  element={<ProfileView />}
+              />
+              <Route
+                path="/edit-profile" element={<EditProfile />}
+              />
+              <Route
+                path="/profile-business"  element={<ProfileViewBusiness />}
+              />
+              <Route
+                path="/edit-profile-business" element={<EditProfileBusiness />}
               />
             </Routes>
           </div>

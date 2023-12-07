@@ -43,7 +43,7 @@ export default function AppBarNav() {
           <Button color="inherit" href='/events' startIcon={<SearchRoundedIcon />}>Explore</Button>
           <Button color="inherit" startIcon={<SMSIcon fontSize='small' />}>Messages</Button>
           {/* <Button color="inherit" startIcon={<PersonIcon />}>Profile</Button> */}
-          <Link color="inherit" underline="none" component={RouterLink} to="/profile">
+          <Link color="inherit" underline="none" component={RouterLink} to="/profile-business">
             <Button color={location.pathname === "/login" || location.pathname === "/register" ? "customColor" : "inherit"} startIcon={<PersonIcon />}>Profile</Button>
           </Link>
         </Box>
