@@ -29,6 +29,11 @@ export default function AppBarNav() {
 
 
         <Box sx={{ display: { xs: "none", sm: "none", md: "inherit" } }}>
+          <Link color="inherit" underline="none" component={RouterLink} to="/explore">
+            <Button color={location.pathname === "/explore" ? "customColor" : "inherit"} startIcon={<SearchRoundedIcon />} >
+              Explore
+            </Button>
+          </Link>
           <Link color="inherit" underline="none" component={RouterLink} to="/events">
             <Button color={location.pathname === "/events" ? "customColor" : "inherit"} startIcon={<GroupRoundedIcon />} >
               Ketchups
@@ -37,14 +42,18 @@ export default function AppBarNav() {
 
 
 
+
+
           {/* <Button color="inherit" startIcon={<GroupRoundedIcon />} >
             Ketchups
           </Button> */}
-          <Button color="inherit" href='/events' startIcon={<SearchRoundedIcon />}>Explore</Button>
+          {/* <Button color="inherit" href='/events' startIcon={<SearchRoundedIcon />}>Explore</Button> */}
           <Button color="inherit" startIcon={<SMSIcon fontSize='small' />}>Messages</Button>
           {/* <Button color="inherit" startIcon={<PersonIcon />}>Profile</Button> */}
           <Link color="inherit" underline="none" component={RouterLink} to="/profile">
-            <Button color={location.pathname === "/login" || location.pathname === "/register" ? "customColor" : "inherit"} startIcon={<PersonIcon />}>Profile</Button>
+            <Button color={location.pathname === "/login"
+              || location.pathname === "/profile"
+              || location.pathname === "/register" ? "customColor" : "inherit"} startIcon={<PersonIcon />}>Profile</Button>
           </Link>
         </Box>
 

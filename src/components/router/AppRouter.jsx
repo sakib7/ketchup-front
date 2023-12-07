@@ -12,6 +12,7 @@ import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
 import AppBarNav from './AppBarNav.jsx';
 import BottomNav from './BottomNav.jsx';
 import ProfileView from '../../pages/ProfileView.jsx';
+import EventPage from '../../pages/EventPage.jsx';
 
 const PrivateRoute = ({ element }) => {
   const { token } = useAuth();
@@ -24,8 +25,11 @@ const AppRouter = () => {
   const defaultTheme = createTheme({
     palette: {
       customColor: {
-        main: '#eeff41', // Replace with your desired custom color
+        main: '#01658c', // Replace with your desired custom color
       },
+      primary: {
+        main: '#FFCF60'
+      }
     },
   });
   return (
@@ -38,10 +42,13 @@ const AppRouter = () => {
             <Routes>
               {/* <Route path="/" element={<Home />} /> */}
               {/* <Route path="/about" element={<About />} /> */}
-              <Route path="/events" element={<CardList />} />
+              <Route path="/events" element={<PrivateRoute element={<CardList myEvents={true} />} />} />
+              <Route path="/explore" element={<CardList />} />
+              <Route path="/events/:eventId" element={<EventPage />} />
+              <Route path="/update-event/:eventId" element={<PrivateRoute element={<EventStepper isEdit={true} />} />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
-              <Route path="/create-event" element={<EventStepper />} />
+              <Route path="/create-event" element={<PrivateRoute element={<EventStepper />} />} />
               <Route
                 path="/profile"
                 element={<PrivateRoute element={<ProfileView />} />}

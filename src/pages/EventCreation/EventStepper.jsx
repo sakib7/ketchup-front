@@ -1,4 +1,4 @@
-import { useState, Fragment } from 'react';
+import { useState, Fragment, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
@@ -11,15 +11,60 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { StepContent } from '@mui/material';
 import StepInterest from './StepInterest';
 import StepPlace from './StepPlace';
+import StepDetail from './StepDetail';
+import { useNavigate, useParams } from 'react-router-dom';
+import axiosInstance from '../../components/auth/axiosInstance';
+import dayjs from 'dayjs';
 
 const steps = ['Interest', 'Place', 'Details'];
 
-export default function HorizontalLinearStepper() {
+export default function HorizontalLinearStepper({ isEdit }) {
   const [activeStep, setActiveStep] = useState(0);
   const [skipped, setSkipped] = useState(new Set());
-  const defaultTheme = createTheme();
   const [interest, setInterest] = useState("");
   const [place, setPlace] = useState({});
+  const [eventDetails, setEventDetails] = useState({
+    eventName: '',
+    eventDate: null,
+    eventLocation: '',
+    eventDescription: ''
+  });
+  const { eventId } = useParams();
+  useEffect(() => {
+    if (isEdit) {
+      getEvent()
+    }
+  }, [])
+  const navigate = useNavigate();
+  const defaultTheme = createTheme({
+    palette: {
+      customColor: {
+        main: '#eeff41', // Replace with your desired custom color
+      },
+      primary: {
+        main: '#FFCF60'
+      }
+    },
+  });
+
+  const getEvent = async () => {
+    try {
+      const response = await axiosInstance.get(`/ketchups/${eventId}`);
+      if (response.status === 200) {
+        console.log(response.data);
+        setInterest(response.data.category)
+        setEventDetails({
+          eventName: response.data.name,
+          eventDate: dayjs(response.data.datetime),
+          eventLocation: response.data.address,
+          eventDescription: response.data.description
+        })
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
 
   const isStepOptional = (step) => {
     // return step === 1;
@@ -39,6 +84,10 @@ export default function HorizontalLinearStepper() {
 
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
     setSkipped(newSkipped);
+
+    if (activeStep === steps.length - 1) {
+      isEdit ? updateEvent() : createEvent()
+    }
   };
 
   const handleBack = () => {
@@ -63,6 +112,50 @@ export default function HorizontalLinearStepper() {
   const handleReset = () => {
     setActiveStep(0);
   };
+
+  const createEvent = async () => {
+    try {
+      const data = {
+        "category": interest,
+        "address": eventDetails.eventLocation,
+        "description": eventDetails.eventDescription,
+        "name": eventDetails.eventName,
+        "datetime": eventDetails.eventDate
+      }
+      const response = await axiosInstance.post('/ketchups', data);
+      if (response.status === 201) {
+        navigate("/events")
+
+      }
+      // const { access } = response.data;
+      // login(access);
+
+    } catch (error) {
+      console.error('Login failed:', error);
+    }
+  }
+
+  const updateEvent = async () => {
+    try {
+      const data = {
+        "category": interest,
+        "address": eventDetails.eventLocation,
+        "description": eventDetails.eventDescription,
+        "name": eventDetails.eventName,
+        "datetime": eventDetails.eventDate
+      }
+      const response = await axiosInstance.put(`/ketchups/${eventId}`, data);
+      if (response.status === 200) {
+        navigate("/events")
+
+      }
+      // const { access } = response.data;
+      // login(access);
+
+    } catch (error) {
+      console.error('Login failed:', error);
+    }
+  }
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -115,7 +208,7 @@ export default function HorizontalLinearStepper() {
               }
               {
                 activeStep === 2 &&
-                <p>three</p>
+                <StepDetail eventDetails={eventDetails} setEventDetails={setEventDetails} />
               }
               <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
                 <Button
@@ -133,7 +226,7 @@ export default function HorizontalLinearStepper() {
                   </Button>
                 )}
 
-                <Button onClick={handleNext}>
+                <Button onClick={handleNext} variant='contained'>
                   {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
                 </Button>
               </Box>

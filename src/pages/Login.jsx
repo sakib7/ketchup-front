@@ -53,7 +53,7 @@ export default function SignIn() {
     try {
       const response = await axiosInstance.post('/login', data);
       const { access } = response.data;
-      login(access);
+      login(access, response.data);
 
     } catch (error) {
       console.error('Login failed:', error);

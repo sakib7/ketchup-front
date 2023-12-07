@@ -4,7 +4,7 @@ import { Card, CardContent, Typography, Avatar, Grid, Button } from '@mui/materi
 import { useAuth } from '../components/auth/AuthContext';
 
 const ProfileView = () => {
-  const { logout } = useAuth();
+  const { userData, logout } = useAuth();
 
   const user = {
     name: 'John Doe',
@@ -26,13 +26,13 @@ const ProfileView = () => {
           <CardContent style={{ textAlign: 'center' }}>
             <Avatar alt={user.name} src={user.avatarUrl} style={{ width: 100, height: 100, margin: '0 auto 16px' }} />
             <Typography variant="h5" gutterBottom>
-              {user.name}
+              {`${userData.firstname || ''} ${userData.lastname || ''}`}
             </Typography>
             <Typography variant="subtitle1" color="textSecondary">
-              @{user.username}
+              {userData.username}
             </Typography>
             <Typography variant="body1" paragraph>
-              Email: {user.email}
+              Email: {userData.email}
             </Typography>
             <Button variant="contained" color='error' onClick={handleLogout}>
               Logout

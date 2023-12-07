@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { useState } from 'react'
+import { useState, useEffect } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Button from '@mui/material/Button';
 import CameraIcon from '@mui/icons-material/PhotoCamera';
@@ -18,6 +17,8 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import EventCard from '../components/EventCard';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 import Link from '@mui/material/Link';
+import axiosInstance from '../components/auth/axiosInstance';
+import { useAuth } from '../components/auth/AuthContext';
 
 function Copyright() {
   return (
@@ -118,7 +119,33 @@ const events = [
 // TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
 
-export default function CardList() {
+export default function CardList({ myEvents = false }) {
+  const { userData, token } = useAuth();
+
+  const [events, setEvents] = useState([]);
+  useEffect(() => {
+    getEvents()
+  }, [])
+
+  const getEvents = async () => {
+    try {
+      const response = await axiosInstance.get('/ketchups');
+      if (response.status === 200) {
+        console.log(response.data, userData);
+        if (token) {
+          setEvents(response.data.filter((e) =>
+            myEvents ?
+              e.user.email === userData.email : e.user.email !== userData.email)
+          )
+        } else {
+          setEvents(response.data)
+        }
+      }
+    } catch (error) {
+      console.error('Login failed:', error);
+    }
+  }
+
   return (
 
     <main>
@@ -131,7 +158,7 @@ export default function CardList() {
           // display: 'none'
         }}
       >
-        <Container maxWidth="lg">
+        <Container maxWidth="lg" >
           {/* <Typography
             component="h1"
             variant="h3"
@@ -142,7 +169,11 @@ export default function CardList() {
             Welcome to Ketch-Up
           </Typography> */}
           <Typography variant="h5" align="center" color="text.secondary" paragraph sx={{ mt: 3 }}>
-            Welcome to KetchUp - where connections come to life, and local businesses thrive! 🚀
+            {
+              myEvents ?
+                'Crafting Memorable Moments: Your Personalized KetchUps Await! 🎉✨' :
+                'Welcome to KetchUp - where connections come to life, and local businesses thrive! 🚀'
+            }
 
           </Typography>
           <Stack
@@ -163,7 +194,7 @@ export default function CardList() {
         <Grid container spacing={2}>
           {events.map((event) => (
             <Grid item key={event.id} xs={12} sm={6} md={4} style={{ display: 'flex', justifyContent: 'center' }}>
-              <EventCard event={event} />
+              <EventCard event={event} myEvent={myEvents} fetch={getEvents} />
               {/* <Card
                   sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}
                 >
