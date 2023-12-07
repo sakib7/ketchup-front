@@ -13,6 +13,9 @@ import AppBarNav from './AppBarNav.jsx';
 import BottomNav from './BottomNav.jsx';
 import ProfileView from '../../pages/ProfileView.jsx';
 import EventPage from '../../pages/EventPage.jsx';
+import ProfileViewBusiness from '../../pages/ProfileViewBusiness.jsx';
+import ProfileEditBusiness from '../../pages/ProfileEditBusiness.jsx';
+import ProfileEdit from '../../pages/ProfileEdit.jsx';
 
 const PrivateRoute = ({ element }) => {
   const { token } = useAuth();
@@ -52,6 +55,15 @@ const AppRouter = () => {
               <Route
                 path="/profile"
                 element={<PrivateRoute element={<ProfileView />} />}
+              />
+              <Route
+                path="/edit-profile" element={<ProfileEdit />}
+              />
+              <Route
+                path="/profile-business" element={<ProfileViewBusiness />}
+              />
+              <Route
+                path="/edit-profile-business" element={<ProfileEditBusiness />}
               />
             </Routes>
           </div>

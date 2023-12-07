@@ -1,23 +1,23 @@
-// ProfileView.js
+// ProfileViewBusinessBusiness.jsx
 import React from 'react';
 import { Card, CardContent, Typography, Avatar, Grid, Button } from '@mui/material';
 import { useAuth } from '../components/auth/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
-const ProfileView = () => {
-  const { userData, logout } = useAuth();
+const ProfileViewBusiness = () => {
+  const { logout } = useAuth();
   const navigate = useNavigate();
 
-  const user = {
-    name: 'John Doe',
-    username: 'johndoe123',
-    email: 'john@example.com',
-    avatarUrl: 'https://placekitten.com/200/200', // Replace with the actual URL of the user's avatar
-    age: 25,
-    nationality: 'French',
-    languages: ['French', 'English'],
-    interests: ['Coding', 'Reading', 'Traveling'],
-    type: 'User',
+  const business = {
+    name: 'Turku Bistro',
+    username: 'turkubistro',
+    email: 'turku.bistro@outlook.org',
+    avatarUrl: 'https://cdn.sortiraparis.com/images/80/100789/834071-too-restaurant-too-hotel-paris-photos-menu-entrees.jpg', // Replace with the actual URL of the user's avatar
+    location: 'Hämeenkatu 10, Turku',
+    price: '25.99',
+    currency: '€',
+    discount: '10',
+    type: 'Business',
   };
 
   const handleLogout = () => {
@@ -27,7 +27,7 @@ const ProfileView = () => {
   };
 
   const handleEditProfile = () => {
-    navigate('/edit-profile');
+    navigate('/edit-profile-business');
   };
 
   return (
@@ -35,33 +35,30 @@ const ProfileView = () => {
       <Grid item>
         <Card style={{ minWidth: 300 }}>
           <CardContent style={{ textAlign: 'center' }}>
-            <Avatar alt={user.name} src={user.avatarUrl} style={{ width: 100, height: 100, margin: '0 auto 16px' }} />
+            <Avatar alt={business.name} src={business.avatarUrl} style={{ width: 100, height: 100, margin: '0 auto 16px' }} />
             <Typography variant="h5" gutterBottom>
-              {`${userData.firstname || ''} ${userData.lastname || ''}`}
+              {business.name}
             </Typography>
             <Typography variant="subtitle1" color="textSecondary">
-              {userData.username}
+              @{business.username}
             </Typography>
             <Typography variant="body1" paragraph>
-              Email: {userData.email}
+              Email: {business.email}
             </Typography>
             <Typography variant="body1" paragraph>
-              Age: {user.age}
+              Location: {business.location}
             </Typography>
             <Typography variant="body1" paragraph>
-              Nationality: {user.nationality}
+              Price: {business.price + business.currency}
             </Typography>
             <Typography variant="body1" paragraph>
-              Languages: {user.languages.join(', ')}
+              Discount: {business.discount + '%'}
             </Typography>
-            <Typography variant="body1" paragraph>
-              Interests: {user.interests.join(', ')}
-            </Typography>
+            <Button variant="contained" color='error' onClick={handleLogout}>
+              Logout
+            </Button>
             <Button variant="contained" color='primary' onClick={handleEditProfile} sx={{ ml: 5 }}>
               Edit Profile
-            </Button>
-            <Button sx={{ ml: 2 }} variant="contained" color='error' onClick={handleLogout}>
-              Logout
             </Button>
           </CardContent>
         </Card>
@@ -70,4 +67,4 @@ const ProfileView = () => {
   );
 };
 
-export default ProfileView;
+export default ProfileViewBusiness;
