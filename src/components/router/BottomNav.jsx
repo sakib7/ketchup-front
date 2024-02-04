@@ -1,6 +1,6 @@
 import { BottomNavigation, BottomNavigationAction, Paper } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
-import SMSIcon from '@mui/icons-material/sms';
+import SMSIcon from '@mui/icons-material/Sms';
 import GroupRoundedIcon from '@mui/icons-material/GroupRounded';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import { useState } from 'react';
