@@ -47,6 +47,7 @@ const AppRouter = () => {
               {/* <Route path="/about" element={<About />} /> */}
               <Route path="/events" element={<PrivateRoute element={<CardList myEvents={true} />} />} />
               <Route path="/explore" element={<CardList />} />
+              <Route path="/" element={<CardList />} />
               <Route path="/events/:eventId" element={<EventPage />} />
               <Route path="/update-event/:eventId" element={<PrivateRoute element={<EventStepper isEdit={true} />} />} />
               <Route path="/login" element={<Login />} />
