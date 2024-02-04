@@ -1,8 +1,7 @@
 import { AppBar, BottomNavigation, BottomNavigationAction, Box, Button, Paper, Stack, ThemeProvider, Toolbar, Typography, createTheme } from '@mui/material';
-import RestoreIcon from '@mui/icons-material/search';
 import GroupRoundedIcon from '@mui/icons-material/GroupRounded';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
-import SMSIcon from '@mui/icons-material/sms';
+import SMSIcon from '@mui/icons-material/Sms';
 import PersonIcon from '@mui/icons-material/Person';
 import { useState } from 'react';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
