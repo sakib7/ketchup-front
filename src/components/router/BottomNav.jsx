@@ -1,13 +1,10 @@
 import { BottomNavigation, BottomNavigationAction, Paper } from '@mui/material';
-import RestoreIcon from '@mui/icons-material/search';
 import PersonIcon from '@mui/icons-material/Person';
-import LocationOnIcon from '@mui/icons-material/groups';
 import SMSIcon from '@mui/icons-material/sms';
 import GroupRoundedIcon from '@mui/icons-material/GroupRounded';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import Link from '@mui/material/Link';
 
 export default function BottomNav() {
   const [bottomMenu, setBottomMenu] = useState("");
