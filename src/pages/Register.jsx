@@ -44,6 +44,7 @@ export default function SignUp() {
       "password": formData.get('password'),
       "firstname": formData.get('firstName'),
       "lastname": formData.get('lastName'),
+      "role": 'user'
     }
     handleRegister(data)
     console.log(data);
