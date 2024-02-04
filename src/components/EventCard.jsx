@@ -59,7 +59,7 @@ export default function EventCard({ event, myEvent, fetch }) {
           {event?.name}
         </Typography>
         <Typography gutterBottom variant="subtitle1" component="div" style={{ display: 'flex', alignItems: 'center' }}>
-          <PersonIcon sx={{ mr: 1 }} />  {event?.user?.username}
+          <PersonIcon sx={{ mr: 1 }} />  {`${event?.user?.firstname || ''} ${event?.user?.lastname || ''}`}
         </Typography>
         <Typography gutterBottom variant="subtitle1" component="div" style={{ display: 'flex', alignItems: 'center' }}>
           <AccessTimeRoundedIcon sx={{ mr: 1 }} /> {parsedDate}

@@ -100,10 +100,10 @@ export default function StepPlace({ place: selectedPlace, setPlace }) {
                       <PlaceRoundedIcon sx={{ mr: 1 }} />  {place?.place}
                     </Typography>
                     <Typography gutterBottom variant="subtitle1" component="div" style={{ display: 'flex', alignItems: 'center' }}>
-                      <EuroIcon sx={{ mr: 1 }} /> {place?.price}
+                      <EuroIcon sx={{ mr: 1 }} /> starts at {place?.price}
                     </Typography>
                     <Typography gutterBottom variant="subtitle1" component="div" style={{ display: 'flex', alignItems: 'center' }}>
-                      <DiscountIcon sx={{ mr: 1 }} /> {place?.discount}%
+                      <DiscountIcon sx={{ mr: 1 }} /> {place?.discount}% OFF
                     </Typography>
                   </CardContent>
 

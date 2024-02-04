@@ -3,6 +3,7 @@ import React from 'react';
 import { Card, CardContent, Typography, Avatar, Grid, Button } from '@mui/material';
 import { useAuth } from '../components/auth/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import parse from 'html-react-parser';
 
 const ProfileView = () => {
   const { userData, logout } = useAuth();
@@ -18,6 +19,8 @@ const ProfileView = () => {
     languages: ['French', 'English'],
     interests: ['Coding', 'Reading', 'Traveling'],
     type: 'User',
+    description: '<ol><li><strong>ddrrrd</strong></li><li><em><u>twp</u></em></li><li><br></li></ol>'
+
   };
 
   const handleLogout = () => {
@@ -56,6 +59,9 @@ const ProfileView = () => {
             </Typography>
             <Typography variant="body1" paragraph>
               Interests: {user.interests.join(', ')}
+            </Typography>
+            <Typography variant="body1" paragraph>
+              Nationality: {parse(user.description)}
             </Typography>
             <Button variant="contained" color='primary' onClick={handleEditProfile} sx={{ ml: 5 }}>
               Edit Profile

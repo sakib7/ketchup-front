@@ -16,6 +16,7 @@ import { Link as RouterLink } from 'react-router-dom';
 import { useAuth } from '../components/auth/AuthContext';
 import axiosInstance from '../components/auth/axiosInstance';
 import { Navigate } from 'react-router-dom';
+import { Snackbar, Alert } from '@mui/material';
 
 function Copyright(props) {
   return (
@@ -36,6 +37,11 @@ const defaultTheme = createTheme();
 
 export default function SignIn() {
   const { token, login } = useAuth();
+  const [alert, setAlert] = useState({
+    message: "",
+    severity: "error",
+    open: false
+  });
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -43,7 +49,8 @@ export default function SignIn() {
 
     const data = {
       "username": formData.get('email'),
-      "password": formData.get('password')
+      "password": formData.get('password'),
+      "role": 'user'
     }
     handleLogin(data)
     console.log(data);
@@ -53,11 +60,32 @@ export default function SignIn() {
     try {
       const response = await axiosInstance.post('/login', data);
       const { access } = response.data;
-      login(access, response.data);
+      setAlert({
+        severity: "success",
+        message: "Successfully logged in!",
+        open: true
+      })
+      setTimeout(() => {
+        login(access, response.data);
+      }, 1000);
 
     } catch (error) {
       console.error('Login failed:', error);
+      setAlert({
+        severity: "error",
+        message: "Login Failed" + Math.random(),
+        open: true
+      })
     }
+  };
+
+
+  const handleClose = () => {
+    setAlert({
+      open: false,
+      message: "",
+      severity: "error",
+    })
   };
 
   return (
@@ -131,6 +159,22 @@ export default function SignIn() {
       {
         token && < Navigate to="/profile" />
       }
+      <Snackbar
+        open={alert.open}
+        autoHideDuration={2000}
+        onClose={handleClose}
+      >
+        <Alert
+          onClose={handleClose}
+          severity={alert.severity || 'success'}
+          variant="filled"
+          sx={{ width: '100%' }}
+          anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+          key={'top' + 'right'}
+        >
+          {alert.message}
+        </Alert>
+      </Snackbar>
     </ThemeProvider>
   );
 }

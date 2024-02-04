@@ -44,7 +44,7 @@ export default function StepDetail({ eventDetails, setEventDetails }) {
         }}
       >
         <Typography component="h1" variant="h5">
-          Select your interest
+          Details of ketch-up
         </Typography>
         <Box>
           <TextField

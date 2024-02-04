@@ -143,7 +143,7 @@ function EventDetails() {
 
   return (
     <Container maxWidth="md">
-      <Card sx={{ my: 3 }}>
+      <Card sx={{ my: 3, mb: 6 }}>
         <Container disableGutters>
           <CardMedia sx={{ height: 200, pl: 5 }} image={`https://source.unsplash.com/random?wallpapers&${event.id}`} title="Event Image" />
           <Typography variant="h5" sx={{ mt: 4, mx: 2 }} >
