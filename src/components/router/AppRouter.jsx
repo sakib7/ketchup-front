@@ -16,11 +16,19 @@ import EventPage from '../../pages/EventPage.jsx';
 import ProfileViewBusiness from '../../pages/ProfileViewBusiness.jsx';
 import ProfileEditBusiness from '../../pages/ProfileEditBusiness.jsx';
 import ProfileEdit from '../../pages/ProfileEdit.jsx';
+import RegisterBusiness from '../../pages/RegisterBusiness.jsx';
+import LoginBusiness from '../../pages/LoginBusiness.jsx';
 
 const PrivateRoute = ({ element }) => {
-  const { token } = useAuth();
+  const { userData, token } = useAuth();
 
-  return token ? element : <Navigate to="/login" />;
+  return token && userData.role == "user" ? element : <Navigate to="/login" />;
+};
+
+const BusinessRoute = ({ element }) => {
+  const { userData, token } = useAuth();
+
+  return token && userData.role == "business" ? element : <Navigate to="/login" />;
 };
 
 
@@ -52,19 +60,21 @@ const AppRouter = () => {
               <Route path="/update-event/:eventId" element={<PrivateRoute element={<EventStepper isEdit={true} />} />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/login-business" element={<LoginBusiness />} />
+              <Route path="/register-business" element={<RegisterBusiness />} />
               <Route path="/create-event" element={<PrivateRoute element={<EventStepper />} />} />
               <Route
                 path="/profile"
                 element={<PrivateRoute element={<ProfileView />} />}
               />
               <Route
-                path="/edit-profile" element={<ProfileEdit />}
+                path="/edit-profile" element={<PrivateRoute element={<ProfileEdit />} />}
               />
               <Route
-                path="/profile-business" element={<ProfileViewBusiness />}
+                path="/profile-business" element={<BusinessRoute element={<ProfileViewBusiness />} />}
               />
               <Route
-                path="/edit-profile-business" element={<ProfileEditBusiness />}
+                path="/edit-business" element={<BusinessRoute element={<ProfileEditBusiness />} />}
               />
             </Routes>
           </div>

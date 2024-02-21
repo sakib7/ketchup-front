@@ -18,6 +18,7 @@ import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import IconButton from '@mui/material/IconButton';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import { useAuth } from '../components/auth/AuthContext';
+import parse from 'html-react-parser';
 
 function EventDetails() {
   const { eventId } = useParams();
@@ -164,7 +165,7 @@ function EventDetails() {
             <ClassIcon sx={{ mr: 1 }} /> Type: {event.category}
           </Typography>
 
-          <Typography whiteSpace="pre-line" sx={{ mt: 3 }} paragraph>{event.description}</Typography>
+          <Typography whiteSpace="pre-line" sx={{ mt: 3 }} paragraph>{parse(event.description)}</Typography>
           <Button sx={{ display: canJoin() ? 'unset' : 'none' }}
             variant="contained" color="error"
             onClick={() => { joinRequest() }}>

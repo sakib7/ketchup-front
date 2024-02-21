@@ -35,8 +35,8 @@ function Copyright(props) {
 
 const defaultTheme = createTheme();
 
-export default function SignIn() {
-  const { token, login, userData } = useAuth();
+export default function LoginBusiness() {
+  const { token, login } = useAuth();
   const [alert, setAlert] = useState({
     message: "",
     severity: "error",
@@ -50,7 +50,7 @@ export default function SignIn() {
     const data = {
       "username": formData.get('email'),
       "password": formData.get('password'),
-      "role": 'user'
+      "role": 'business'
     }
     handleLogin(data)
     console.log(data);
@@ -104,7 +104,7 @@ export default function SignIn() {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Sign in
+            Sign in as a Business
           </Typography>
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
             <TextField
@@ -157,9 +157,7 @@ export default function SignIn() {
         <Copyright sx={{ mt: 8, mb: 4 }} />
       </Container>
       {
-        token && userData.role == "user" ? < Navigate to="/profile" />
-          : token && userData.role == "business" ? < Navigate to="/profile-business" />
-            : <></>
+        token && < Navigate to="/profile" />
       }
       <Snackbar
         open={alert.open}

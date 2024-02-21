@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
@@ -9,39 +9,46 @@ import RestaurantIcon from '@mui/icons-material/Restaurant';
 import PetsIcon from '@mui/icons-material/Pets';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
 import TheaterComedyIcon from '@mui/icons-material/TheaterComedy';
+import axiosInstance from '../../components/auth/axiosInstance';
 
 export default function StepInterest({ interest, setInterest }) {
-  const [interests, setInterests] = useState([
-    {
-      label: "Food",
-      icon: <RestaurantIcon />
-    },
-    {
-      label: "Pets",
-      icon: <PetsIcon />
-    },
-    {
-      label: "Music",
-      icon: <MusicNoteIcon />
-    },
-    {
-      label: "Theater",
-      icon: <TheaterComedyIcon />
-    }
-  ])
+  // const [interests, setInterests] = useState([
+  //   {
+  //     label: "Food",
+  //     icon: <RestaurantIcon />
+  //   },
+  //   {
+  //     label: "Pets",
+  //     icon: <PetsIcon />
+  //   },
+  //   {
+  //     label: "Music",
+  //     icon: <MusicNoteIcon />
+  //   },
+  //   {
+  //     label: "Theater",
+  //     icon: <TheaterComedyIcon />
+  //   }
+  // ])
 
-  const [selectedLabel, setLabel] = useState("")
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
-  };
+  const [interestOptions, setInterestOption] = useState([])
+  useEffect(() => {
+    fetchInterests();
+  }, [])
 
   const handleClick = (value) => {
     setInterest(value)
+  }
+
+  const fetchInterests = async () => {
+    try {
+      const response = await axiosInstance.get(`/interests`);
+      if (response.status === 200) {
+        setInterestOption(response.data)
+      }
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   return (
@@ -64,22 +71,23 @@ export default function StepInterest({ interest, setInterest }) {
           useFlexGap
           flexWrap="wrap"
           spacing={2}
+          justifyContent='center'
           sx={{ mt: 3 }}
         >
           {
-            interests.map(({ label, icon }, index) => (
+            interestOptions.map(({ id, name }, index) => (
               <Chip
                 key={index}
-                icon={icon}
+                // icon={icon}
                 label={
                   <Typography variant="body1" sx={{ ml: 1 }} >
-                    {label}
+                    {name}
                   </Typography>
                 }
-                variant={interest === label ? "filled" : "outlined"}
-                color={interest === label ? "primary" : "info"}
+                variant={interest?.name === name ? "filled" : "outlined"}
+                color={interest?.name === name ? "primary" : "info"}
                 sx={{ minWidth: "130px", minHeight: "50px", ml: 2, marginBottom: 2 }}
-                onClick={() => { handleClick(label) }} />
+                onClick={() => { handleClick({ id, name }) }} />
             ))
           }
         </Stack>

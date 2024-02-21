@@ -8,7 +8,6 @@ import { Link as RouterLink } from 'react-router-dom';
 
 export default function BottomNav() {
   const [bottomMenu, setBottomMenu] = useState("");
-
   return (
     <Paper sx={{ display: { md: "none" }, position: 'fixed', zIndex: 10, bottom: 0, left: 0, right: 0 }} elevation={3}>
       <BottomNavigation

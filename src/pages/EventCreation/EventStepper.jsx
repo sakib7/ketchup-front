@@ -205,7 +205,7 @@ export default function HorizontalLinearStepper({ isEdit }) {
               }
               {
                 activeStep === 1 &&
-                <StepPlace place={place} setPlace={setPlace} />
+                <StepPlace interest={interest} place={place} setPlace={setPlace} />
               }
               {
                 activeStep === 2 &&

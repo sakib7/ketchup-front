@@ -10,15 +10,16 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import dayjs from 'dayjs';
 import 'dayjs/locale/en-gb';
+import ReactQuill from 'react-quill';
 
 export default function StepDetail({ eventDetails, setEventDetails }) {
 
 
-  // Handle form submission
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Add your logic to handle form submission, e.g., send data to the server
-    console.log('Form submitted:', eventDetails);
+  const handleQuill = (val) => {
+    setEventDetails({
+      ...eventDetails,
+      'eventDescription': val,
+    });
   };
 
   // Handle form field changes
@@ -85,7 +86,7 @@ export default function StepDetail({ eventDetails, setEventDetails }) {
 
           />
 
-          <TextField
+          {/* <TextField
             label="Description"
             variant="outlined"
             fullWidth
@@ -97,7 +98,35 @@ export default function StepDetail({ eventDetails, setEventDetails }) {
             rows={4}
             sx={{ mt: 3 }}
 
-          />
+          /> */}
+
+          <Typography gutterBottom variant="h6"
+            fontSize={16} textAlign={'left'}
+            my={2} component="div">
+            Description
+          </Typography>
+
+          <ReactQuill
+            style={{
+              height: '350px'
+            }}
+            value={eventDetails.eventDescription}
+            onChange={handleQuill}
+            modules={{
+              toolbar: [
+                [{ 'header': [1, 2, false] }],
+                ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+                [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }],
+                ['link'],
+                ['clean']
+              ],
+            }}
+            formats={[
+              'header',
+              'bold', 'italic', 'underline', 'strike', 'blockquote',
+              'list', 'bullet', 'indent',
+              'link',
+            ]} />
         </Box>
 
       </Box>

@@ -1,27 +1,27 @@
 // ProfileEdit.jsx
-import React, { useState, useRef } from 'react';
-import { Autocomplete, Avatar, Grid, TextField, Typography, Fab, Stack, Paper } from '@mui/material';
+import React, { useState, useRef, useEffect } from 'react';
+import { Autocomplete, Avatar, Grid, TextField, Typography, Fab, Stack, Paper, Button, Alert, Snackbar } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import AddIcon from '@mui/icons-material/Add';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import DemoSelect from '../components/DemoSelect';
+import axiosInstance from '../components/auth/axiosInstance';
 
 const ProfileEdit = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
+  useEffect(() => {
+    fetchInterests();
+    fetchProfile();
+  }, [])
+  const [interestOptions, setInterestOption] = useState([])
+  const [userProfile, setUserProfile] = useState({});
+  const [avatarFile, setAvatarFile] = useState(null);
 
-  const [editedUser, setEditedUser] = useState({
-    name: 'John Doe',
-    username: 'johndoe123',
-    email: 'john@example.com',
-    avatarUrl: 'https://placekitten.com/200/200', // Replace with the actual URL of the user's avatar
-    age: 25,
-    nationality: 'French',
-    languages: ['French', 'English'],
-    interests: ['Coding', 'Reading', 'Traveling'],
-    type: 'User',
-    description: "<p>🌟 John Doe | 28 🌈 | Cityville 🏡</p><p>🎓 Marketing Pro | 🎨 Art Enthusiast</p><p>🎵 Indie Music Lover | 📸 Photography Hobbyist</p><p>😊 Chasing dreams and enjoying the journey! ✨</p><p>Let's connect! 🤝🌟</p>"
+  const [alert, setAlert] = useState({
+    message: "",
+    severity: "error",
+    open: false
   });
 
   const handleCancel = () => {
@@ -29,18 +29,75 @@ const ProfileEdit = () => {
   };
 
   const handleValidateProfile = () => {
-    console.log('Edited User:', editedUser);
 
-    navigate('/profile');
+    // navigate('/profile');
   };
+
+  const fetchInterests = async () => {
+    try {
+      const response = await axiosInstance.get(`/interests`);
+      if (response.status === 200) {
+        setInterestOption(response.data)
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  const fetchProfile = async () => {
+    try {
+      const response = await axiosInstance.get(`/profile`);
+      if (response.status === 200) {
+        setUserProfile(response.data);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  const updateProfile = async () => {
+    console.log(userProfile);
+    try {
+      const response = await axiosInstance.patch(`/profile`, {
+        firstname: userProfile.firstname,
+        lastname: userProfile.lastname,
+        bio: userProfile.bio,
+        interests: userProfile.interests
+      });
+      if (response.status === 200) {
+        console.log(response.data);
+        setAlert({
+          severity: "success",
+          message: "Successfully updated profile!",
+          open: true
+        })
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  const updateAvatar = async () => {
+    if (!avatarFile) return;
+    const formData = new FormData();
+    formData.append("avatar", avatarFile)
+    try {
+      const response = await axiosInstance.patch(`/profile`, formData);
+      if (response.status === 200) {
+        console.log(response.data);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-
+    setAvatarFile(file)
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setEditedUser({ ...editedUser, avatarUrl: reader.result });
+        setUserProfile({ ...userProfile, avatar: reader.result });
       };
       reader.readAsDataURL(file);
     }
@@ -52,15 +109,15 @@ const ProfileEdit = () => {
     }
   };
 
-  const top100Films = [
-    { title: 'Music', year: 1994 },
-    { title: 'Food', year: 1972 },
-    { title: 'Travel', year: 1974 },
-    { title: 'Café', year: 2008 },
-    { title: 'Language exchange', year: 1957 },
-    { title: "Museum", year: 1993 },
-    { title: 'Karaoke', year: 1994 },
-  ]
+
+
+  const handleClose = () => {
+    setAlert({
+      open: false,
+      message: "",
+      severity: "error",
+    })
+  };
 
   return (
     <Paper
@@ -83,7 +140,7 @@ const ProfileEdit = () => {
         <Grid item xs={12} >
           <Stack direction={'row'} textAlign={'center'} padding={5} alignItems="center"
             justifyContent="center">
-            <Avatar alt={editedUser.name} src={editedUser.avatarUrl} style={{ width: 100, height: 100 }} />
+            <Avatar alt={userProfile.firstname} src={userProfile.avatar} style={{ width: 100, height: 100 }} />
 
             <input
               ref={fileInputRef}
@@ -102,9 +159,19 @@ const ProfileEdit = () => {
 
         <Grid item xs={12} >
           <TextField
-            label="Name"
-            value={editedUser.name}
-            onChange={(e) => setEditedUser({ ...editedUser, name: e.target.value })}
+            label="First Name"
+            value={userProfile.firstname || ''}
+            onChange={(e) => setUserProfile({ ...userProfile, firstname: e.target.value })}
+            fullWidth
+            sx={{ mb: 4 }}
+          // InputLabelProps={{ shrink: true }}
+          />
+        </Grid>
+        <Grid item xs={12} >
+          <TextField
+            label="Last Name"
+            value={userProfile.lastname || ''}
+            onChange={(e) => setUserProfile({ ...userProfile, lastname: e.target.value })}
             fullWidth
             sx={{ mb: 4 }}
 
@@ -113,39 +180,28 @@ const ProfileEdit = () => {
         <Grid item xs={12}>
           <TextField
             label="Email"
-            value={editedUser.email}
-            onChange={(e) => setEditedUser({ ...editedUser, email: e.target.value })}
+            value={userProfile.email || ''}
+            onChange={(e) => setUserProfile({ ...userProfile, email: e.target.value })}
             fullWidth
             sx={{ mb: 2 }}
+            disabled
           />
         </Grid>
-        <Grid item xs={12}>
-          <TextField
-            label="Age"
-            type="number"
-            value={editedUser.age}
-            onChange={(e) => setEditedUser({ ...editedUser, age: parseInt(e.target.value, 10) })}
-            fullWidth
-            sx={{ mb: 2 }}
-          />
-        </Grid>
-        {/* <Grid item xs={12}>
-          <TextField
-            label="Interests"
-            value={editedUser.interests.join(', ')}
-            onChange={(e) => setEditedUser({ ...editedUser, interests: e.target.value.split(',').map(item => item.trim()) })}
-            fullWidth
-            sx={{ mb: 2 }}
-          />
-        </Grid> */}
+
+
         <Grid item xs={12}>
           <Stack spacing={3} sx={{ mb: 2, width: '100%' }}>
             <Autocomplete
               multiple
               id="tags-outlined"
-              options={top100Films}
-              getOptionLabel={(option) => option.title}
-              defaultValue={[top100Films[3]]}
+              options={interestOptions}
+              getOptionLabel={(option) => option.name}
+              value={interestOptions.filter(op => userProfile.interests?.includes(op.id))}
+              onChange={(event, newValue) => {
+                console.log(newValue);
+                setUserProfile({ ...userProfile, interests: newValue.map(i => i.id) })
+              }}
+              // value={[top100Films[1]]}
               filterSelectedOptions
               renderInput={(params) => (
                 <TextField
@@ -157,10 +213,14 @@ const ProfileEdit = () => {
             />
           </Stack>
         </Grid>
+
         <Grid item xs={12}>
           <ReactQuill
-            value={editedUser.description}
-            onChange={(e) => { console.log(e) }}
+            value={userProfile.bio}
+            onChange={(e) => {
+              console.log(e)
+              setUserProfile({ ...userProfile, bio: e })
+            }}
             modules={{
               toolbar: [
                 [{ 'header': [1, 2, false] }],
@@ -177,95 +237,41 @@ const ProfileEdit = () => {
               'link',
             ]} />
         </Grid>
+
+        <Grid item xs={12} >
+          <Stack direction='row' justifyContent='center' my={5}>
+            <Button variant="contained" color='error' onClick={handleCancel}>
+              Cancel
+            </Button>
+            <Button variant="contained" color='primary' onClick={() => {
+              updateAvatar();
+              updateProfile();
+            }} sx={{ ml: 5 }}>
+              Update
+            </Button>
+          </Stack>
+
+        </Grid>
       </Grid>
+      <Snackbar
+        open={alert.open}
+        autoHideDuration={2000}
+        onClose={handleClose}
+      >
+        <Alert
+          onClose={handleClose}
+          severity={alert.severity || 'success'}
+          variant="filled"
+          sx={{ width: '100%' }}
+          anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+          key={'top' + 'right'}
+        >
+          {alert.message}
+        </Alert>
+      </Snackbar>
     </Paper>
 
-    // <Card style={{ margin: '20px' }}>
-    //   <Stack spacing={2}>
-    //     <TextField
-    //       label="Name"
-    //       value={editedUser.name}
-    //       onChange={(e) => setEditedUser({ ...editedUser, name: e.target.value })}
-    //       fullWidth
-    //       sx={{ mb: 2 }}
-    //     />
-    //     <TextField
-    //       label="Username"
-    //       value={editedUser.username}
-    //       onChange={(e) => setEditedUser({ ...editedUser, username: e.target.value })}
-    //       fullWidth
-    //       sx={{ mb: 2 }}
-    //     />
-    //   </Stack>
-    // </Card>
 
-    // <Grid container justifyContent="center" alignItems="center" sx={{ mt: 4 }}>
-    //   <Grid item>
-    //     <Card style={{ width: '50%', margin: 'auto' }}>
-    //       <CardContent style={{ textAlign: 'center', position: 'relative' }}>
-    //         <Avatar alt={editedUser.name} src={editedUser.avatarUrl} style={{ width: 100, height: 100, margin: '0 auto 16px' }} />
-    //         <div style={{ position: 'absolute', top: 8, right: 8 }}>
-    //           <input
-    //             ref={fileInputRef}
-    //             type="file"
-    //             accept="image/*"
-    //             onChange={handleFileChange}
-    //             style={{ display: 'none' }}
-    //             id="avatar-input"
-    //           />
-    //           <Fab color="primary" aria-label="add" onClick={handleFabClick}>
-    //             <AddIcon />
-    //           </Fab>
-    //         </div>
-
-    //         <TextField
-    //           label="Name"
-    //           value={editedUser.name}
-    //           onChange={(e) => setEditedUser({ ...editedUser, name: e.target.value })}
-    //           fullWidth
-    //           sx={{ mb: 2 }}
-    //         />
-    //         <TextField
-    //           label="Username"
-    //           value={editedUser.username}
-    //           onChange={(e) => setEditedUser({ ...editedUser, username: e.target.value })}
-    //           fullWidth
-    //           sx={{ mb: 2 }}
-    //         />
-    //         <TextField
-    //           label="Email"
-    //           value={editedUser.email}
-    //           onChange={(e) => setEditedUser({ ...editedUser, email: e.target.value })}
-    //           fullWidth
-    //           sx={{ mb: 2 }}
-    //         />
-
-    //         <TextField
-    //           label="Age"
-    //           type="number"
-    //           value={editedUser.age}
-    //           onChange={(e) => setEditedUser({ ...editedUser, age: parseInt(e.target.value, 10) })}
-    //           fullWidth
-    //           sx={{ mb: 2 }}
-    //         />
-    //         <TextField
-    //           label="Interests"
-    //           value={editedUser.interests.join(', ')}
-    //           onChange={(e) => setEditedUser({ ...editedUser, interests: e.target.value.split(',').map(item => item.trim()) })}
-    //           fullWidth
-    //           sx={{ mb: 2 }}
-    //         />
-
-    //         <Button variant="contained" color='error' onClick={handleCancel}>
-    //           Cancel
-    //         </Button>
-    //         <Button variant="contained" color='primary' onClick={handleValidateProfile} sx={{ ml: 5 }}>
-    //           Update
-    //         </Button>
-    //       </CardContent>
-    //     </Card>
-    //   </Grid>
-    // </Grid>
   );
 };
 

@@ -6,8 +6,10 @@ import PersonIcon from '@mui/icons-material/Person';
 import { useState } from 'react';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 import Link from '@mui/material/Link';
+import { useAuth } from '../auth/AuthContext';
 export default function AppBarNav() {
   const [bottomMenu, setBottomMenu] = useState("");
+  const { userData, token } = useAuth();
   const location = useLocation();
   const theme = createTheme({
     palette: {
@@ -27,34 +29,41 @@ export default function AppBarNav() {
 
 
 
-        <Box sx={{ display: { xs: "none", sm: "none", md: "inherit" } }}>
-          <Link color="inherit" underline="none" component={RouterLink} to="/explore">
-            <Button color={location.pathname === "/explore" ? "customColor" : "inherit"} startIcon={<SearchRoundedIcon />} >
-              Explore
-            </Button>
-          </Link>
-          <Link color="inherit" underline="none" component={RouterLink} to="/events">
-            <Button color={location.pathname === "/events" ? "customColor" : "inherit"} startIcon={<GroupRoundedIcon />} >
-              Ketchups
-            </Button>
-          </Link>
+        {
+          userData.role == "business" ?
+            <Box sx={{ display: { xs: "none", sm: "none", md: "inherit" } }}>
+              <Link color="inherit" underline="none" component={RouterLink} to="/profile">
+                <Button color={location.pathname === "/login"
+                  || location.pathname === "/profile"
+                  || location.pathname === "/register" ? "customColor" : "inherit"} startIcon={<PersonIcon />}>Profile</Button>
+              </Link>
+            </Box> :
+            <Box sx={{ display: { xs: "none", sm: "none", md: "inherit" } }}>
+              <Link color="inherit" underline="none" component={RouterLink} to="/explore">
+                <Button color={location.pathname === "/explore" ? "customColor" : "inherit"} startIcon={<SearchRoundedIcon />} >
+                  Explore
+                </Button>
+              </Link>
+              <Link color="inherit" underline="none" component={RouterLink} to="/events">
+                <Button color={location.pathname === "/events" ? "customColor" : "inherit"} startIcon={<GroupRoundedIcon />} >
+                  Ketchups
+                </Button>
+              </Link>
 
-
-
-
-
-          {/* <Button color="inherit" startIcon={<GroupRoundedIcon />} >
+              {/* <Button color="inherit" startIcon={<GroupRoundedIcon />} >
             Ketchups
           </Button> */}
-          {/* <Button color="inherit" href='/events' startIcon={<SearchRoundedIcon />}>Explore</Button> */}
-          <Button color="inherit" startIcon={<SMSIcon fontSize='small' />}>Messages</Button>
-          {/* <Button color="inherit" startIcon={<PersonIcon />}>Profile</Button> */}
-          <Link color="inherit" underline="none" component={RouterLink} to="/profile">
-            <Button color={location.pathname === "/login"
-              || location.pathname === "/profile"
-              || location.pathname === "/register" ? "customColor" : "inherit"} startIcon={<PersonIcon />}>Profile</Button>
-          </Link>
-        </Box>
+              {/* <Button color="inherit" href='/events' startIcon={<SearchRoundedIcon />}>Explore</Button> */}
+              <Button color="inherit" startIcon={<SMSIcon fontSize='small' />}>Messages</Button>
+              {/* <Button color="inherit" startIcon={<PersonIcon />}>Profile</Button> */}
+              <Link color="inherit" underline="none" component={RouterLink} to="/profile">
+                <Button color={location.pathname === "/login"
+                  || location.pathname === "/profile"
+                  || location.pathname === "/register" ? "customColor" : "inherit"} startIcon={<PersonIcon />}>Profile</Button>
+              </Link>
+            </Box>
+
+        }
 
 
 

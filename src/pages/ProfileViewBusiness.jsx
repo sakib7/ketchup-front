@@ -1,24 +1,23 @@
-// ProfileViewBusinessBusiness.jsx
-import React from 'react';
-import { Card, CardContent, Typography, Avatar, Grid, Button } from '@mui/material';
+// ProfileView.js
+import React, { useEffect, useState } from 'react';
+import { Card, CardMedia, Typography, Avatar, Chip, Button, Paper, Stack, Divider } from '@mui/material';
 import { useAuth } from '../components/auth/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import parse from 'html-react-parser';
+import axiosInstance from '../components/auth/axiosInstance';
 
-const ProfileViewBusiness = () => {
-  const { logout } = useAuth();
+const ProfileView = () => {
+  const { userData, logout } = useAuth();
   const navigate = useNavigate();
+  const [interestOptions, setInterestOption] = useState([])
+  const [userProfile, setUserProfile] = useState({});
+  const [userRoot, setUserRoot] = useState({});
+  useEffect(() => {
+    getProfile();
+    fetchInterests();
+  }, [])
 
-  const business = {
-    name: 'Turku Bistro',
-    username: 'turkubistro',
-    email: 'turku.bistro@outlook.org',
-    avatarUrl: 'https://cdn.sortiraparis.com/images/80/100789/834071-too-restaurant-too-hotel-paris-photos-menu-entrees.jpg', // Replace with the actual URL of the user's avatar
-    location: 'Hämeenkatu 10, Turku',
-    price: '25.99',
-    currency: '€',
-    discount: '10',
-    type: 'Business',
-  };
+
 
   const handleLogout = () => {
     // Add your logout logic here
@@ -27,44 +26,191 @@ const ProfileViewBusiness = () => {
   };
 
   const handleEditProfile = () => {
-    navigate('/edit-profile-business');
+    navigate('/edit-business');
   };
 
+  const getProfile = async () => {
+    try {
+      const response = await axiosInstance.get('/profile');
+      if (response.status === 200) {
+        setUserProfile(response.data?.business_profile)
+        setUserRoot(response.data);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const fetchInterests = async () => {
+    try {
+      const response = await axiosInstance.get(`/interests`);
+      if (response.status === 200) {
+        setInterestOption(response.data)
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+
   return (
-    <Grid container justifyContent="center" alignItems="center" sx={{ mt: 4 }}>
-      <Grid item>
-        <Card style={{ minWidth: 300 }}>
-          <CardContent style={{ textAlign: 'center' }}>
-            <Avatar alt={business.name} src={business.avatarUrl} style={{ width: 100, height: 100, margin: '0 auto 16px' }} />
-            <Typography variant="h5" gutterBottom>
-              {business.name}
-            </Typography>
-            <Typography variant="subtitle1" color="textSecondary">
-              @{business.username}
-            </Typography>
-            <Typography variant="body1" paragraph>
-              Email: {business.email}
-            </Typography>
-            <Typography variant="body1" paragraph>
-              Location: {business.location}
-            </Typography>
-            <Typography variant="body1" paragraph>
-              Price: {business.price + business.currency}
-            </Typography>
-            <Typography variant="body1" paragraph>
-              Discount: {business.discount + '%'}
-            </Typography>
-            <Button variant="contained" color='error' onClick={handleLogout}>
-              Logout
-            </Button>
-            <Button variant="contained" color='primary' onClick={handleEditProfile} sx={{ ml: 5 }}>
-              Edit Profile
-            </Button>
-          </CardContent>
-        </Card>
-      </Grid>
-    </Grid>
+    <Paper
+      elevation={5}
+
+      // variant='outlined'
+      sx={{
+        mx: 'auto',
+        mt: 3,
+        mb: 3,
+        maxWidth: { xs: '95%', sm: '50%' },
+        padding: 3,
+      }}>
+
+      <Avatar alt={userProfile.name} src={userRoot.avatar} style={{ width: 100, height: 100, margin: '0 auto 16px' }} />
+      <Divider />
+
+
+
+      <Stack direction={'row'} py={1} alignItems={'center'} justifyContent={'space-between'} sx={{
+        px: { xs: '0px', sm: '50px' }
+      }}>
+        <Typography variant="h6" fontSize={18} >
+          Name
+        </Typography>
+        <Typography variant="p" fontSize={18} textAlign={'right'}>
+          {`${userProfile.name || ''}`}
+        </Typography>
+      </Stack>
+      <Divider />
+
+      <Stack
+        direction={'row'}
+        py={1}
+        alignItems={'center'}
+        justifyContent={'space-between'} sx={{
+          px: { xs: '0px', sm: '50px' }
+        }}
+      >
+        <Typography variant="h6" fontSize={18} >
+          {`Address`}
+        </Typography>
+        <Typography variant="p" fontSize={18} pl={3} pr={0} textAlign={'right'}>
+          {`${userProfile.address || ''}`}
+        </Typography>
+      </Stack>
+      <Divider />
+
+      <Stack direction={'row'} py={1} alignItems={'center'} justifyContent={'space-between'} sx={{
+        px: { xs: '0px', sm: '50px' }
+      }}>
+        <Typography variant="h6" fontSize={18} >
+          Contact Number
+        </Typography>
+        <Typography variant="p" fontSize={18} textAlign={'right'}>
+          {`${userProfile.phone_number || ''}`}
+        </Typography>
+      </Stack>
+      <Divider />
+
+      <Stack direction={'row'} py={1} alignItems={'center'} justifyContent={'space-between'} sx={{
+        px: { xs: '0px', sm: '50px' }
+      }}>
+        <Typography variant="h6" fontSize={18} >
+          Interests
+        </Typography>
+        <Typography variant="p" fontSize={18} textAlign={'right'}>
+          {interestOptions
+            .filter(i => userProfile.interests?.includes(i.id))
+            .map(i =>
+              <Chip label={i.name} color="primary" sx={{ ml: 2 }} />
+            )}
+        </Typography>
+      </Stack>
+      <Divider />
+
+      <Stack direction={'row'} py={1} alignItems={'center'} justifyContent={'space-between'} sx={{
+        px: { xs: '0px', sm: '50px' }
+      }}>
+        <Typography variant="h6" fontSize={18} >
+          Discount
+        </Typography>
+        <Typography variant="p" fontSize={18} textAlign={'right'}>
+          {`${userProfile.discount || '0'}%`}
+        </Typography>
+      </Stack>
+      <Divider />
+
+      <Stack direction={'row'} py={1} alignItems={'center'} justifyContent={'space-between'} sx={{
+        px: { xs: '0px', sm: '50px' }
+      }}>
+        <Typography variant="h6" fontSize={18} >
+          Starting Price
+        </Typography>
+        <Typography variant="p" fontSize={18} textAlign={'right'}>
+          {`${userProfile.starting_price || '0'}€`}
+        </Typography>
+      </Stack>
+      <Divider />
+
+      <Stack direction={'column'} py={1} alignItems={'flex-start'}
+        sx={{
+          px: { xs: '0px', sm: '50px' }
+        }}
+      >
+        <Typography variant="h6" fontSize={18} >
+          Opening hours:
+        </Typography>
+        <Typography variant="p" mt={2} fontSize={18} style={{ whiteSpace: 'pre-wrap' }} >
+          {parse(userProfile.opening_hours || '')}
+        </Typography>
+      </Stack >
+      <Divider />
+
+      <Stack direction={'column'} py={1} alignItems={'flex-start'}
+        sx={{
+          px: { xs: '0px', sm: '50px' }
+        }}
+      >
+        <Typography variant="h6" fontSize={18} >
+          Business Description:
+        </Typography>
+        <Typography variant="p" fontSize={18} >
+          {parse(userProfile.description || '')}
+        </Typography>
+        {userProfile.image &&
+          <Card sx={{ maxWidth: '100%' }}>
+            <CardMedia
+              component="img"
+              height="undefined"
+              src={userProfile.image}
+              alt="green iguana"
+            />
+          </Card>
+        }
+
+      </Stack >
+      <Divider />
+
+
+
+      <Stack direction={'row'}
+        py={2}
+        alignItems={'center'}
+        justifyContent={'center'}
+        sx={{
+          px: { xs: '0px', sm: '50px' }
+        }}>
+        <Button variant="contained" color='primary' onClick={handleEditProfile} sx={{ ml: 5 }}>
+          Edit Profile
+        </Button>
+        <Button sx={{ ml: 2 }} variant="contained" color='error' onClick={handleLogout}>
+          Logout
+        </Button>
+      </Stack>
+
+    </Paper >
+
   );
 };
 
-export default ProfileViewBusiness;
+export default ProfileView;

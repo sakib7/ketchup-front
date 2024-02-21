@@ -1,13 +1,18 @@
 // ProfileView.js
-import React from 'react';
-import { Card, CardContent, Typography, Avatar, Grid, Button } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Card, CardContent, Typography, Avatar, Grid, Button, Paper, Stack, Divider } from '@mui/material';
 import { useAuth } from '../components/auth/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import parse from 'html-react-parser';
+import axiosInstance from '../components/auth/axiosInstance';
 
 const ProfileView = () => {
   const { userData, logout } = useAuth();
   const navigate = useNavigate();
+  const [userProfile, setUserProfile] = useState({});
+  useEffect(() => {
+    getProfile()
+  }, [])
 
   const user = {
     name: 'John Doe',
@@ -33,46 +38,133 @@ const ProfileView = () => {
     navigate('/edit-profile');
   };
 
+  const getProfile = async () => {
+    try {
+      const response = await axiosInstance.get('/profile');
+      if (response.status === 200) {
+        setUserProfile(response.data)
+      }
+
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  console.log(userProfile.bio);
+
   return (
-    <Grid container justifyContent="center" alignItems="center" sx={{ mt: 4 }}>
-      <Grid item>
-        <Card style={{ minWidth: 300 }}>
-          <CardContent style={{ textAlign: 'center' }}>
-            <Avatar alt={user.name} src={user.avatarUrl} style={{ width: 100, height: 100, margin: '0 auto 16px' }} />
-            <Typography variant="h5" gutterBottom>
-              {`${userData.firstname || ''} ${userData.lastname || ''}`}
-            </Typography>
-            <Typography variant="subtitle1" color="textSecondary">
-              {userData.username}
-            </Typography>
-            <Typography variant="body1" paragraph>
-              Email: {userData.email}
-            </Typography>
-            <Typography variant="body1" paragraph>
-              Age: {user.age}
-            </Typography>
-            <Typography variant="body1" paragraph>
-              Nationality: {user.nationality}
-            </Typography>
-            <Typography variant="body1" paragraph>
-              Languages: {user.languages.join(', ')}
-            </Typography>
-            <Typography variant="body1" paragraph>
-              Interests: {user.interests.join(', ')}
-            </Typography>
-            <Typography variant="body1" paragraph>
-              Nationality: {parse(user.description)}
-            </Typography>
-            <Button variant="contained" color='primary' onClick={handleEditProfile} sx={{ ml: 5 }}>
-              Edit Profile
-            </Button>
-            <Button sx={{ ml: 2 }} variant="contained" color='error' onClick={handleLogout}>
-              Logout
-            </Button>
-          </CardContent>
-        </Card>
-      </Grid>
-    </Grid>
+    <Paper
+      elevation={5}
+
+      // variant='outlined'
+      sx={{
+        mx: 'auto',
+        mt: 3,
+        mb: 3,
+        maxWidth: { xs: '95%', sm: '30%' },
+        padding: 3,
+      }}>
+
+      <Avatar alt={user.name} src={userProfile.avatar} style={{ width: 100, height: 100, margin: '0 auto 16px' }} />
+      <Divider />
+
+
+
+      <Stack direction={'row'} py={1} alignItems={'center'} justifyContent={'space-between'} sx={{
+        px: { xs: '0px', sm: '50px' }
+      }}>
+        <Typography variant="h6" fontSize={18} >
+          {`Full name:`}
+        </Typography>
+        <Typography variant="p" fontSize={18} >
+          {`${userProfile.firstname || ''} ${userProfile.lastname || ''}`}
+        </Typography>
+      </Stack>
+      <Divider />
+
+      <Stack direction={'row'} py={1} alignItems={'center'} justifyContent={'space-between'} sx={{
+        px: { xs: '0px', sm: '50px' }
+      }}>
+        <Typography variant="h6" fontSize={18} >
+          {`Email`}
+        </Typography>
+        <Typography variant="p" fontSize={18} >
+          {`${userProfile.email || ''}`}
+        </Typography>
+      </Stack>
+      <Divider />
+
+      <Stack direction={'column'} py={1} alignItems={'flex-start'}
+        sx={{
+          px: { xs: '0px', sm: '50px' }
+        }}
+      >
+        <Typography variant="h6" fontSize={18} >
+          {`Bio:`}
+        </Typography>
+        <Typography variant="p" fontSize={18} >
+          {parse(userProfile.bio || '')}
+        </Typography>
+      </Stack >
+      <Divider />
+
+
+
+      <Stack direction={'row'}
+        py={1}
+        alignItems={'center'}
+        justifyContent={'center'}
+        sx={{
+          px: { xs: '0px', sm: '50px' }
+        }}>
+        <Button variant="contained" color='primary' onClick={handleEditProfile} sx={{ ml: 5 }}>
+          Edit Profile
+        </Button>
+        <Button sx={{ ml: 2 }} variant="contained" color='error' onClick={handleLogout}>
+          Logout
+        </Button>
+      </Stack>
+
+    </Paper >
+    // <Grid container justifyContent="center" alignItems="center" sx={{ mt: 4 }}>
+    //   <Grid item>
+    //     <Card style={{ minWidth: 300 }}>
+    //       <CardContent style={{ textAlign: 'center' }}>
+    //         <Avatar alt={user.name} src={user.avatarUrl} style={{ width: 100, height: 100, margin: '0 auto 16px' }} />
+    //         <Typography variant="h5" gutterBottom>
+    //           {`${userData.firstname || ''} ${userData.lastname || ''}`}
+    //         </Typography>
+    //         <Typography variant="subtitle1" color="textSecondary">
+    //           {userData.username}
+    //         </Typography>
+    //         <Typography variant="body1" paragraph>
+    //           Email: {userData.email}
+    //         </Typography>
+    //         <Typography variant="body1" paragraph>
+    //           Age: {user.age}
+    //         </Typography>
+    //         <Typography variant="body1" paragraph>
+    //           Nationality: {user.nationality}
+    //         </Typography>
+    //         <Typography variant="body1" paragraph>
+    //           Languages: {user.languages.join(', ')}
+    //         </Typography>
+    //         <Typography variant="body1" paragraph>
+    //           Interests: {user.interests.join(', ')}
+    //         </Typography>
+    //         <Typography variant="body1" paragraph>
+    //           Nationality: {parse(user.description)}
+    //         </Typography>
+    //         <Button variant="contained" color='primary' onClick={handleEditProfile} sx={{ ml: 5 }}>
+    //           Edit Profile
+    //         </Button>
+    //         <Button sx={{ ml: 2 }} variant="contained" color='error' onClick={handleLogout}>
+    //           Logout
+    //         </Button>
+    //       </CardContent>
+    //     </Card>
+    //   </Grid>
+    // </Grid>
   );
 };
 
