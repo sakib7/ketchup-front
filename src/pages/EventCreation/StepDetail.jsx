@@ -1,19 +1,22 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { Chip, Stack, TextField, Button } from '@mui/material';
+import { Chip, Stack, TextField, Button, Card, CardMedia } from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import dayjs from 'dayjs';
 import 'dayjs/locale/en-gb';
 import ReactQuill from 'react-quill';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
 export default function StepDetail({ eventDetails, setEventDetails }) {
 
+  const imageInputRef = useRef(null);
+  const [imageFile, setImageFile] = useState(null);
 
   const handleQuill = (val) => {
     setEventDetails({
@@ -30,6 +33,29 @@ export default function StepDetail({ eventDetails, setEventDetails }) {
       ...eventDetails,
       [name]: value,
     });
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    const targetName = e.target.name
+    console.log(targetName);
+    setImageFile(imageFile)
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setEventDetails({
+          ...eventDetails,
+          image: reader.result,
+          imageFile: file
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+  const handleImageClick = () => {
+    if (imageInputRef.current) {
+      imageInputRef.current.click();
+    }
   };
 
   return (
@@ -85,20 +111,52 @@ export default function StepDetail({ eventDetails, setEventDetails }) {
             sx={{ mt: 3 }}
 
           />
+          <Typography gutterBottom variant="h6"
+            fontSize={16} textAlign={'left'}
+            my={2} component="div">
+            Event Image
+          </Typography>
+          <Stack
+            direction={'column'}
+            mb={4}
+            alignItems="flex-start"
+            justifyContent="center"
+          >
+            <input
+              ref={imageInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              style={{ display: 'none' }}
+              id="image-input"
+              name='image'
+            />
+            <Button
+              component="label"
+              role={undefined}
+              variant="contained"
+              tabIndex={-1}
+              sx={{ mb: 4 }}
+              size='small'
+              onClick={handleImageClick}
+              startIcon={<CloudUploadIcon />}
+            >
+              Upload Image
+            </Button>
+            {eventDetails.image &&
+              <Card sx={{ maxWidth: '100%' }}>
+                <CardMedia
+                  component="img"
+                  height="undefined"
+                  src={eventDetails.image}
+                  alt="green iguana"
+                />
+              </Card>
+            }
 
-          {/* <TextField
-            label="Description"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            name="eventDescription"
-            value={eventDetails.eventDescription}
-            onChange={handleChange}
-            multiline
-            rows={4}
-            sx={{ mt: 3 }}
 
-          /> */}
+
+          </Stack>
 
           <Typography gutterBottom variant="h6"
             fontSize={16} textAlign={'left'}

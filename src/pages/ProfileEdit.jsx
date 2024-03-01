@@ -214,7 +214,7 @@ const ProfileEdit = () => {
           </Stack>
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid item xs={12} >
           <ReactQuill
             value={userProfile.bio}
             onChange={(e) => {

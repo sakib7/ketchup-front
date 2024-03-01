@@ -86,7 +86,13 @@ export default function HorizontalLinearStepper({ isEdit }) {
     setSkipped(newSkipped);
 
     if (activeStep === steps.length - 1) {
-      isEdit ? updateEvent() : createEvent()
+      if (isEdit) {
+        updateEvent();
+        updateEventImage();
+      } else {
+        createEvent();
+        createEventImage();
+      }
     }
   };
 
@@ -116,11 +122,12 @@ export default function HorizontalLinearStepper({ isEdit }) {
   const createEvent = async () => {
     try {
       const data = {
-        "category": interest,
+        "category": interest?.name,
         "address": eventDetails.eventLocation,
         "description": eventDetails.eventDescription,
         "name": eventDetails.eventName,
-        "datetime": eventDetails.eventDate
+        "datetime": eventDetails.eventDate,
+        "business": place?.id,
       }
       const response = await axiosInstance.post('/ketchups', data);
       if (response.status === 201) {
@@ -135,10 +142,24 @@ export default function HorizontalLinearStepper({ isEdit }) {
     }
   }
 
+  const createEventImage = async () => {
+    if (!eventDetails?.image) return;
+    const formData = new FormData();
+    eventDetails?.image && formData.append("image", eventDetails?.image)
+    try {
+      const response = await axiosInstance.post(`/ketchups`, formData);
+      if (response.status === 200) {
+        console.log(response.data);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   const updateEvent = async () => {
     try {
       const data = {
-        "category": interest,
+        "category": interest?.name,
         "address": eventDetails.eventLocation,
         "description": eventDetails.eventDescription,
         "name": eventDetails.eventName,
@@ -154,6 +175,20 @@ export default function HorizontalLinearStepper({ isEdit }) {
 
     } catch (error) {
       console.error('Login failed:', error);
+    }
+  }
+
+  const updateEventImage = async () => {
+    if (!eventDetails?.imageFile) return;
+    const formData = new FormData();
+    eventDetails?.imageFile && formData.append("image", eventDetails?.imageFile)
+    try {
+      const response = await axiosInstance.patch(`/ketchups/${eventId}`, formData);
+      if (response.status === 200) {
+        console.log(response.data);
+      }
+    } catch (error) {
+      console.error(error);
     }
   }
 

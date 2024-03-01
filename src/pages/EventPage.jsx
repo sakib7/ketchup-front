@@ -142,6 +142,8 @@ function EventDetails() {
 
   const formattedDate = dayjs(event.datetime).format('dddd, MMMM D, YYYY [at] h:mm A');
 
+  const LAT = '60.46279367851973', LON = '22.28889103052577';
+
   return (
     <Container maxWidth="md">
       <Card sx={{ my: 3, mb: 6 }}>
@@ -165,7 +167,23 @@ function EventDetails() {
             <ClassIcon sx={{ mr: 1 }} /> Type: {event.category}
           </Typography>
 
+
+
+
+
           <Typography whiteSpace="pre-line" sx={{ mt: 3 }} paragraph>{parse(event.description)}</Typography>
+
+          {/* <iframe
+            width="100%"
+            height="400px"
+            frameborder="0"
+            scrolling="no"
+            marginheight="0"
+            marginwidth="0"
+            src={`https://maps.google.com/maps?q=${LAT},${LON}&hl=en&z=15&amp&output=embed`}
+          >
+          </iframe> */}
+
           <Button sx={{ display: canJoin() ? 'unset' : 'none' }}
             variant="contained" color="error"
             onClick={() => { joinRequest() }}>
