@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { Grid, Card, CardContent, Typography, Button, Avatar, Container, CardMedia, Chip } from '@mui/material';
+import { useParams, Link as RouterLink } from 'react-router-dom';
+import { Link, Card, CardContent, Typography, Button, Avatar, Container, CardMedia, Chip, ListItemButton } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
 import AccessTimeRoundedIcon from '@mui/icons-material/AccessTimeRounded';
 import PlaceRoundedIcon from '@mui/icons-material/PlaceRounded';
@@ -19,11 +19,14 @@ import IconButton from '@mui/material/IconButton';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import { useAuth } from '../components/auth/AuthContext';
 import parse from 'html-react-parser';
+import ProfileDetails from './ProfileDetails';
 
 function EventDetails() {
   const { eventId } = useParams();
   const [event, setEvent] = useState(null);
   const { token, userData } = useAuth()
+  const [openDetails, setOpenDetails] = useState(false)
+  const [clickedProfile, setClickedProfile] = useState({})
 
   useEffect(() => {
     // const getEventById = async () => {
@@ -104,15 +107,8 @@ function EventDetails() {
 
   const canViewAttendee = () => {
     if (token) {
-      if (userData.email === event.user.email)
+      if (event.is_organizer || event.user_application_status === "accepted")
         return true
-      else if (event.applications.some(i => i.user.email === userData.email)) {
-        const request = event.applications.find(i => i.user.email === userData.email)
-        if (request.status === 'accepted') {
-          return false
-        }
-      }
-
       else
         return false
     } else {
@@ -139,16 +135,33 @@ function EventDetails() {
 
   }
 
+  const getJoinStatusv2 = () => {
+    if (!token) return false
+    if (event.user_application_status === 'pending') {
+      return <Chip label="Request Pending" color="info" variant="filled" />
+    } else if (event.user_application_status === 'accepted') {
+      return <Chip label="Joined" color="success" variant="filled" />
+    } else if (event.user_application_status === 'rejected') {
+      return <Chip label="Rejected" color="error" variant="filled" />
+    }
+
+  }
+
+  const handPlaceDetails = (profile) => {
+    setClickedProfile(profile);
+    setOpenDetails(true);
+  }
+
 
   const formattedDate = dayjs(event.datetime).format('dddd, MMMM D, YYYY [at] h:mm A');
 
   const LAT = '60.46279367851973', LON = '22.28889103052577';
 
   return (
-    <Container maxWidth="md">
+    <Container maxWidth="md" sx={{ mb: 6 }}>
       <Card sx={{ my: 3, mb: 6 }}>
         <Container disableGutters>
-          <CardMedia sx={{ height: 200, pl: 5 }} image={`https://source.unsplash.com/random?wallpapers&${event.id}`} title="Event Image" />
+          <CardMedia sx={{ height: 200, pl: 5 }} image={event?.image || `https://source.unsplash.com/random?wallpapers&${event.id}`} title="Event Image" />
           <Typography variant="h5" sx={{ mt: 4, mx: 2 }} >
             {event.name}
           </Typography>
@@ -184,18 +197,23 @@ function EventDetails() {
           >
           </iframe> */}
 
-          <Button sx={{ display: canJoin() ? 'unset' : 'none' }}
-            variant="contained" color="error"
-            onClick={() => { joinRequest() }}>
-            Join
-          </Button>
+
           {
-            getJoinStatus()
+            getJoinStatusv2()
+          }
+          {
+            event.user_application_status ?
+              <></> :
+              <Button sx={{ display: canJoin() ? 'unset' : 'none' }}
+                variant="contained" color="error"
+                onClick={() => { joinRequest() }}>
+                Join
+              </Button>
           }
         </CardContent>
       </Card>
 
-      <Card sx={{ my: 3, display: canViewAttendee() ? 'unset' : 'none' }}>
+      <Card sx={{ my: 3, mb: 6, display: canViewAttendee() ? 'unset' : 'none' }}>
         <Container disableGutters>
           <Typography variant="h6" sx={{ mt: 4, mx: 2 }} >
             Attendees {` (${getAttendeeCount()})`}
@@ -204,48 +222,68 @@ function EventDetails() {
         <CardContent style={{ textAlign: 'start' }}>
           <List sx={{ width: '100%', maxWidth: 500, bgcolor: 'background.paper' }}>
             {
-              event.applications.filter(i => i.status === "accepted" || i.status === "pending").map(item =>
-                <ListItem
-                  secondaryAction={
-                    item.status === 'pending' &&
-                    <>
-                      <Button onClick={() => giveDecision(item.id, 'accepted')} color='success' startIcon={<ThumbUpIcon />} >
-                        Accept
-                      </Button>
-                      <Button onClick={() => giveDecision(item.id, 'rejected')} sx={{ ml: 2 }} color='error' startIcon={<ThumbDownIcon />} >
-                        Decline
-                      </Button>
-                    </>
-                  }
-                >
-                  <ListItemAvatar>
-                    <Avatar src={`https://source.unsplash.com/random?wallpapers&${event.id}`}>
-                      <ImageIcon />
-                    </Avatar>
-                  </ListItemAvatar>
-                  <ListItemText primary={`${item?.user?.firstname || ''} ${item?.user?.lastname || ''}`} secondary={`${item?.user?.email}`} />
-                </ListItem>)
+              event.is_organizer ?
+                (
+                  event.applications.filter(i => i.status === "accepted" || i.status === "pending").map(item =>
+                    <ListItem
+                      secondaryAction={
+                        item.status === 'pending' &&
+                        <>
+                          <Button onClick={() => giveDecision(item.id, 'accepted')} color='success' startIcon={<ThumbUpIcon />} >
+                            Accept
+                          </Button>
+                          <Button onClick={() => giveDecision(item.id, 'rejected')} sx={{ ml: 2 }} color='error' startIcon={<ThumbDownIcon />} >
+                            Decline
+                          </Button>
+                        </>
+                      }
+                    >
+                      <ListItemAvatar
+                        sx={{ cursor: 'pointer' }}
+                        onClick={() => handPlaceDetails(item?.user)}>
+                        <Avatar src={`${item?.user?.avatar}`}>
+                          <ImageIcon />
+                        </Avatar>
+                      </ListItemAvatar>
+                      <ListItemText
+                        sx={{ cursor: 'pointer' }}
+                        onClick={() => handPlaceDetails(item?.user)}
+                        primary={`${item?.user?.firstname || ''} ${item?.user?.lastname || ''}`}
+                        secondary={`${item?.user?.email}`} />
+                    </ListItem>
+                  )
+                )
+                : event.user_application_status === "accepted" ?
+                  (
+                    event.applications.filter(i => i.status === "accepted").map(item =>
+                      <ListItemButton onClick={() => handPlaceDetails(item?.user)}>
+                        <ListItemAvatar>
+                          <Avatar src={`${item?.user?.avatar}`}>
+                            <ImageIcon />
+                          </Avatar>
+                        </ListItemAvatar>
+                        <ListItemText
+                          primary={`${item?.user?.firstname || ''} ${item?.user?.lastname || ''}`}
+                          secondary={`${item?.user?.email}`} />
+                      </ListItemButton>
+                    )
+                  )
+                  :
+                  <></>
             }
-            {/* <ListItem>
-              <ListItemAvatar>
-                <Avatar>
-                  <WorkIcon />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText primary="Dhola dipzol" secondary="Jan 7, 2014" />
-            </ListItem>
-            <ListItem>
-              <ListItemAvatar>
-                <Avatar>
-                  <BeachAccessIcon />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText primary="Vacation" secondary="July 20, 2014" />
-            </ListItem> */}
+            <ProfileDetails
+              open={openDetails}
+              profile={clickedProfile}
+              handleSelect={() => {
+                setOpenDetails(false);
+                setPlace(clickedProfile)
+              }}
+              handleClose={() => { setOpenDetails(false) }}
+            />
           </List>
         </CardContent>
       </Card>
-    </Container>
+    </Container >
     // <Grid container justifyContent="center" alignItems="center" sx={{ mt: 4 }}>
     //   <Grid item>
 

@@ -18,7 +18,7 @@ export default function BottomNav() {
         }}
       >
         <BottomNavigationAction label="Explore" component={RouterLink} to="/explore" icon={<SearchRoundedIcon />} />
-        <BottomNavigationAction label="Ketchups" icon={<GroupRoundedIcon />} />
+        <BottomNavigationAction label="Ketchups" component={RouterLink} to="/events" icon={<GroupRoundedIcon />} />
         <BottomNavigationAction label="Chat" icon={<SMSIcon fontSize='small' />} />
         <BottomNavigationAction component={RouterLink} to="/login" label="Profile" icon={<PersonIcon />} />
       </BottomNavigation>
