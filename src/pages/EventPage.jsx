@@ -193,7 +193,7 @@ function EventDetails() {
             <Stack ml={1} direction="row" spacing={1}>
               <Chip
                 avatar={<Avatar alt="Natacha" src={event?.user?.avatar} />}
-                label={event?.user?.firstname}
+                label={`${event?.user.firstname || ''} ${event?.user.lastname || ''}`}
                 variant="outlined"
                 onClick={() => handProfileDetails(event?.user)}
                 sx={{ border: 0 }}
