@@ -47,12 +47,23 @@ export default function HorizontalLinearStepper({ isEdit }) {
     },
   });
 
+  const formatInterest = async (interests) => {
+    const interests_res = await axiosInstance.get(`/interests`);
+    return interests.length > 0 ?
+      {
+        id: interests[0],
+        name: interests_res?.data.find(i => i.id == interests[0])
+      }
+      : null
+  }
+
   const getEvent = async () => {
     try {
       const response = await axiosInstance.get(`/ketchups/${eventId}`);
       if (response.status === 200) {
-        console.log(response.data);
-        setInterest(response.data.category)
+        const interest_obj = await formatInterest(response.data.interests)
+        setInterest(interest_obj)
+        setPlace(response.data.business)
         setEventDetails({
           eventName: response.data.name,
           eventDate: dayjs(response.data.datetime),
@@ -91,7 +102,6 @@ export default function HorizontalLinearStepper({ isEdit }) {
         updateEventImage();
       } else {
         createEvent();
-        createEventImage();
       }
     }
   };
@@ -122,17 +132,17 @@ export default function HorizontalLinearStepper({ isEdit }) {
   const createEvent = async () => {
     try {
       const data = {
-        "category": interest?.name,
-        "address": eventDetails.eventLocation,
-        "description": eventDetails.eventDescription,
+        // "category": interest?.name,
+        "address": eventDetails.eventLocation || null,
+        "description": eventDetails.eventDescription || null,
         "name": eventDetails.eventName,
         "datetime": eventDetails.eventDate,
-        "business": place?.id,
+        "business": place?.id || null,
+        "interests": [interest?.id]
       }
       const response = await axiosInstance.post('/ketchups', data);
       if (response.status === 201) {
-        navigate("/events")
-
+        updateEventImage(response?.data?.id)
       }
       // const { access } = response.data;
       // login(access);
@@ -142,28 +152,16 @@ export default function HorizontalLinearStepper({ isEdit }) {
     }
   }
 
-  const createEventImage = async () => {
-    if (!eventDetails?.image) return;
-    const formData = new FormData();
-    eventDetails?.image && formData.append("image", eventDetails?.image)
-    try {
-      const response = await axiosInstance.post(`/ketchups`, formData);
-      if (response.status === 200) {
-        console.log(response.data);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  }
 
   const updateEvent = async () => {
     try {
       const data = {
-        "category": interest?.name,
-        "address": eventDetails.eventLocation,
-        "description": eventDetails.eventDescription,
+        "address": eventDetails.eventLocation || null,
+        "description": eventDetails.eventDescription || null,
         "name": eventDetails.eventName,
-        "datetime": eventDetails.eventDate
+        "datetime": eventDetails.eventDate,
+        "business_id": place?.id || null,
+        "interests": [interest?.id]
       }
       const response = await axiosInstance.put(`/ketchups/${eventId}`, data);
       if (response.status === 200) {
@@ -178,18 +176,23 @@ export default function HorizontalLinearStepper({ isEdit }) {
     }
   }
 
-  const updateEventImage = async () => {
-    if (!eventDetails?.imageFile) return;
+  const updateEventImage = async (id) => {
+    if (!eventDetails?.imageFile) {
+      navigate("/events")
+      return;
+    }
     const formData = new FormData();
     eventDetails?.imageFile && formData.append("image", eventDetails?.imageFile)
     try {
-      const response = await axiosInstance.patch(`/ketchups/${eventId}`, formData);
+      const response = await axiosInstance.patch(`/ketchups/${id || eventId}`, formData);
       if (response.status === 200) {
         console.log(response.data);
+        navigate("/events")
       }
     } catch (error) {
       console.error(error);
     }
+
   }
 
   return (

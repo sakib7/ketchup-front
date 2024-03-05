@@ -1,18 +1,33 @@
 // ProfileView.js
 import React, { useEffect, useState } from 'react';
-import { Card, CardContent, Typography, Avatar, Grid, Button, Paper, Stack, Divider } from '@mui/material';
+import { Chip, Typography, Avatar, Grid, Button, Paper, Stack, Divider } from '@mui/material';
 import { useAuth } from '../components/auth/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import parse from 'html-react-parser';
 import axiosInstance from '../components/auth/axiosInstance';
+import VerifiedIcon from '@mui/icons-material/Verified';
+import ErrorIcon from '@mui/icons-material/Error';
 
 const ProfileView = () => {
   const { userData, logout } = useAuth();
   const navigate = useNavigate();
+  const [interestOptions, setInterestOption] = useState([])
   const [userProfile, setUserProfile] = useState({});
   useEffect(() => {
-    getProfile()
+    getProfile();
+    fetchInterests();
   }, [])
+
+  const fetchInterests = async () => {
+    try {
+      const response = await axiosInstance.get(`/interests`);
+      if (response.status === 200) {
+        setInterestOption(response.data)
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   const user = {
     name: 'John Doe',
@@ -61,11 +76,37 @@ const ProfileView = () => {
         mx: 'auto',
         mt: 3,
         mb: 3,
-        maxWidth: { xs: '95%', sm: '30%' },
+        maxWidth: { xs: '95%', sm: '40%' },
         padding: 3,
       }}>
 
-      <Avatar alt={user.name} src={userProfile.avatar} style={{ width: 100, height: 100, margin: '0 auto 16px' }} />
+      <Stack direction={'column'} justifyContent={'center'} alignItems={'center'} >
+
+        <Avatar
+          alt={user.name}
+          src={userProfile.avatar}
+          style={{ width: 100, height: 100 }} />
+
+        {
+          userProfile.email_verified ?
+            <Chip
+              icon={<VerifiedIcon />}
+              label="Verified"
+              variant="outlined"
+              color='success'
+              sx={{ my: 2 }}
+            />
+            :
+            <Chip
+              icon={<ErrorIcon />}
+              label="Not Verified"
+              variant="outlined"
+              color='error'
+              sx={{ my: 2 }}
+            />
+        }
+      </Stack>
+
       <Divider />
 
 
@@ -82,15 +123,52 @@ const ProfileView = () => {
       </Stack>
       <Divider />
 
+      <Stack
+        direction={'row'}
+        py={1}
+        alignItems={'center'}
+        justifyContent={'space-between'}
+        sx={{
+          px: { xs: '0px', sm: '50px' }
+        }}>
+        <Typography variant="h6" fontSize={18}>
+          {`Email:`}
+        </Typography>
+        <Stack direction={'row'} justifyContent={'center'}>
+          <Typography variant="p" fontSize={18} >
+            {`${userProfile.email || ''}`}
+          </Typography>
+        </Stack>
+      </Stack>
+
+      <Divider />
+
       <Stack direction={'row'} py={1} alignItems={'center'} justifyContent={'space-between'} sx={{
         px: { xs: '0px', sm: '50px' }
       }}>
         <Typography variant="h6" fontSize={18} >
-          {`Email`}
+          {`Interests:`}
         </Typography>
-        <Typography variant="p" fontSize={18} >
-          {`${userProfile.email || ''}`}
-        </Typography>
+        <Stack direction={'row'} flexWrap={'wrap'} ml={6}>
+          {
+            interestOptions
+              .filter(item => userProfile?.interests
+                ? userProfile?.interests.includes(item.id)
+                : false)
+              .map(
+                item => (
+                  <Chip
+                    label={item.name}
+                    variant="filled"
+                    color='primary'
+                    sx={{ ml: 1, mb: 1 }}
+                    key={item.id}
+                  />
+                )
+              )
+
+          }
+        </Stack>
       </Stack>
       <Divider />
 

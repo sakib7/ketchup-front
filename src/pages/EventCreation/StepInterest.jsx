@@ -84,8 +84,8 @@ export default function StepInterest({ interest, setInterest }) {
                     {name}
                   </Typography>
                 }
-                variant={interest?.name === name ? "filled" : "outlined"}
-                color={interest?.name === name ? "primary" : "info"}
+                variant={interest?.id === id ? "filled" : "outlined"}
+                color={interest?.id === id ? "primary" : "info"}
                 sx={{ minWidth: "130px", minHeight: "50px", ml: 2, marginBottom: 2 }}
                 onClick={() => { handleClick({ id, name }) }} />
             ))

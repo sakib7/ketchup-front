@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link as RouterLink } from 'react-router-dom';
-import { Link, Card, CardContent, Typography, Button, Avatar, Container, CardMedia, Chip, ListItemButton } from '@mui/material';
+import { Stack, Card, CardContent, Typography, Button, Avatar, Container, CardMedia, Chip, ListItemButton } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
 import AccessTimeRoundedIcon from '@mui/icons-material/AccessTimeRounded';
 import PlaceRoundedIcon from '@mui/icons-material/PlaceRounded';
@@ -27,6 +27,7 @@ function EventDetails() {
   const { token, userData } = useAuth()
   const [openDetails, setOpenDetails] = useState(false)
   const [clickedProfile, setClickedProfile] = useState({})
+  const [interestOptions, setInterestOption] = useState([])
 
   useEffect(() => {
     // const getEventById = async () => {
@@ -42,6 +43,7 @@ function EventDetails() {
     // };
 
     getEvent();
+    fetchInterests();
   }, []);
 
   const getEvent = async () => {
@@ -50,6 +52,17 @@ function EventDetails() {
       if (response.status === 200) {
         console.log(response.data);
         setEvent(response.data)
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  const fetchInterests = async () => {
+    try {
+      const response = await axiosInstance.get(`/interests`);
+      if (response.status === 200) {
+        setInterestOption(response.data)
       }
     } catch (error) {
       console.error(error);
@@ -147,11 +160,19 @@ function EventDetails() {
 
   }
 
-  const handPlaceDetails = (profile) => {
+  const handProfileDetails = (profile) => {
+    // console.log(profile);
     setClickedProfile(profile);
     setOpenDetails(true);
   }
 
+
+
+  const getInterestName = () => {
+    const interest_id = event?.interests.length > 0 ? event?.interests[0] : null;
+    const interest_obj = interestOptions.find(i => i.id == interest_id)
+    return interest_obj?.name
+  }
 
   const formattedDate = dayjs(event.datetime).format('dddd, MMMM D, YYYY [at] h:mm A');
 
@@ -168,23 +189,38 @@ function EventDetails() {
         </Container>
         <CardContent style={{ textAlign: 'start' }}>
           <Typography variant="subtitle1" component="div" style={{ display: 'flex', alignItems: 'center' }} >
-            <PersonIcon sx={{ mr: 1 }} /> Organizer: {event?.user?.firstname}
+            <PersonIcon sx={{ mr: 1 }} /> Organizer:
+            <Stack ml={1} direction="row" spacing={1}>
+              <Chip
+                avatar={<Avatar alt="Natacha" src={event?.user?.avatar} />}
+                label={event?.user?.firstname}
+                variant="outlined"
+                onClick={() => handProfileDetails(event?.user)}
+                sx={{ border: 0 }}
+              />
+            </Stack>
           </Typography>
+          {formattedDate != 'Invalid Date' &&
+            <Typography variant="subtitle1" component="div" sx={{ mt: 1 }} style={{ display: 'flex', alignItems: 'center' }}>
+              <AccessTimeRoundedIcon sx={{ mr: 1 }} /> {formattedDate}
+            </Typography>
+          }
+          {
+            event.address &&
+            <Typography variant="subtitle1" component="div" sx={{ mt: 1 }} style={{ display: 'flex', alignItems: 'center' }}>
+              <PlaceRoundedIcon sx={{ mr: 1 }} /> Place: {event.address}
+            </Typography>
+          }
+
           <Typography variant="subtitle1" component="div" sx={{ mt: 1 }} style={{ display: 'flex', alignItems: 'center' }}>
-            <AccessTimeRoundedIcon sx={{ mr: 1 }} /> {formattedDate}
-          </Typography>
-          <Typography variant="subtitle1" component="div" sx={{ mt: 1 }} style={{ display: 'flex', alignItems: 'center' }}>
-            <PlaceRoundedIcon sx={{ mr: 1 }} /> Place: {event.address}
-          </Typography>
-          <Typography variant="subtitle1" component="div" sx={{ mt: 1 }} style={{ display: 'flex', alignItems: 'center' }}>
-            <ClassIcon sx={{ mr: 1 }} /> Type: {event.category}
+            <ClassIcon sx={{ mr: 1 }} /> Type: {getInterestName()}
           </Typography>
 
 
 
 
 
-          <Typography whiteSpace="pre-line" sx={{ mt: 3 }} paragraph>{parse(event.description)}</Typography>
+          <Typography whiteSpace="pre-line" sx={{ mt: 3 }} paragraph>{parse(event.description || "")}</Typography>
 
           {/* <iframe
             width="100%"
@@ -240,14 +276,14 @@ function EventDetails() {
                     >
                       <ListItemAvatar
                         sx={{ cursor: 'pointer' }}
-                        onClick={() => handPlaceDetails(item?.user)}>
+                        onClick={() => handProfileDetails(item?.user)}>
                         <Avatar src={`${item?.user?.avatar}`}>
                           <ImageIcon />
                         </Avatar>
                       </ListItemAvatar>
                       <ListItemText
                         sx={{ cursor: 'pointer' }}
-                        onClick={() => handPlaceDetails(item?.user)}
+                        onClick={() => handProfileDetails(item?.user)}
                         primary={`${item?.user?.firstname || ''} ${item?.user?.lastname || ''}`}
                         secondary={`${item?.user?.email}`} />
                     </ListItem>
@@ -256,7 +292,7 @@ function EventDetails() {
                 : event.user_application_status === "accepted" ?
                   (
                     event.applications.filter(i => i.status === "accepted").map(item =>
-                      <ListItemButton onClick={() => handPlaceDetails(item?.user)}>
+                      <ListItemButton onClick={() => handProfileDetails(item?.user)}>
                         <ListItemAvatar>
                           <Avatar src={`${item?.user?.avatar}`}>
                             <ImageIcon />

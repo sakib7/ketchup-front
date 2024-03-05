@@ -124,21 +124,48 @@ export default function CardList({ myEvents = false }) {
 
   const [events, setEvents] = useState([]);
   useEffect(() => {
-    getEvents()
+    fetchInterests()
   }, [])
+  const [interestOptions, setInterestOption] = useState([])
 
-  const getEvents = async () => {
+
+  const fetchInterests = async () => {
+    try {
+      const response = await axiosInstance.get(`/interests`);
+      if (response.status === 200) {
+        setInterestOption(response.data)
+        getEvents(response.data)
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  const getInterestName = (event, interestOptions = []) => {
+    const interest_id = event?.interests.length > 0 ? event?.interests[0] : null;
+    const interest_obj = interestOptions.find(i => i.id == interest_id)
+    return interest_obj
+  }
+
+  const getEvents = async (interests) => {
     try {
       const response = await axiosInstance.get('/ketchups');
       if (response.status === 200) {
         console.log(response.data, userData);
         if (token) {
-          setEvents(response.data.filter((e) =>
-            myEvents ?
-              e.user.email === userData.email : e.user.email !== userData.email)
+          setEvents(response.data.map(item => ({
+            ...item,
+            interest_obj: getInterestName(item, interests)
+          }))
+            .filter((e) =>
+              myEvents ?
+                e.user.email === userData.email : e.user.email !== userData.email)
           )
         } else {
-          setEvents(response.data)
+          setEvents(response.data.map(item => ({
+            ...item,
+            interest_obj: getInterestName(item, interests)
+          })))
         }
       }
     } catch (error) {

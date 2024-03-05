@@ -47,6 +47,7 @@ export default function EventCard({ event, myEvent, fetch }) {
     }
   }
 
+
   return (
     <Card sx={{ width: "95%", height: "100%", display: 'flex', flexDirection: 'column' }}>
       <CardMedia
@@ -62,13 +63,13 @@ export default function EventCard({ event, myEvent, fetch }) {
           <PersonIcon sx={{ mr: 1 }} />  {`${event?.user?.firstname || ''} ${event?.user?.lastname || ''}`}
         </Typography>
         <Typography gutterBottom variant="subtitle1" component="div" style={{ display: 'flex', alignItems: 'center' }}>
-          <AccessTimeRoundedIcon sx={{ mr: 1 }} /> {parsedDate}
+          <AccessTimeRoundedIcon sx={{ mr: 1 }} /> Time: {parsedDate == "Invalid Date" ? "N/A" : parsedDate}
         </Typography>
         <Typography gutterBottom variant="subtitle1" component="div" style={{ display: 'flex', alignItems: 'start' }}>
-          <PlaceRoundedIcon sx={{ mr: 1, mt: 0.3 }} /> Place: {event?.address}
+          <PlaceRoundedIcon sx={{ mr: 1, mt: 0.3 }} /> Place: {event?.address || "N/A"}
         </Typography>
         <Typography gutterBottom variant="subtitle1" component="div" style={{ display: 'flex', alignItems: 'center' }}>
-          <ClassIcon sx={{ mr: 1 }} /> Type: {event?.category}
+          <ClassIcon sx={{ mr: 1 }} /> Type: {event?.interest_obj?.name || "N/A"}
         </Typography>
       </CardContent>
       <CardActions style={{ justifyContent: 'flex-end' }}>

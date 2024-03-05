@@ -60,6 +60,8 @@ export default function StepPlace({
     fetchPlaces()
   }, [])
 
+  console.log(selectedPlace, places);
+
   const fetchPlaces = async () => {
     try {
       const response = await axiosInstance.get(`/businesses?interests=${selectedInterest.id}`);

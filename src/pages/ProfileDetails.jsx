@@ -1,11 +1,11 @@
-import * as React from 'react';
+import React, { useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import { Avatar, Card, CardContent, CardMedia, Divider, Stack, Typography } from '@mui/material';
+import { Avatar, CardContent, CardMedia, Chip, Divider, Stack, Typography } from '@mui/material';
 import DiscountIcon from '@mui/icons-material/Discount';
 import EuroIcon from '@mui/icons-material/Euro';
 import PlaceRoundedIcon from '@mui/icons-material/PlaceRounded';
@@ -14,6 +14,12 @@ import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import CallIcon from '@mui/icons-material/Call';
 import parse from 'html-react-parser';
+import VerifiedIcon from '@mui/icons-material/Verified';
+import ErrorIcon from '@mui/icons-material/Error';
+import axiosInstance from '../components/auth/axiosInstance';
+import SendIcon from '@mui/icons-material/Send';
+import { Link as RouterLink, useLocation } from 'react-router-dom';
+import Link from '@mui/material/Link';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -26,7 +32,11 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 
 export default function ProfileDetails({ open, profile, handleSelect, handleClose }) {
   const [scroll, setScroll] = React.useState('paper');
+  const [interestOptions, setInterestOption] = useState([])
 
+  useEffect(() => {
+    fetchInterests();
+  }, [])
   const descriptionElementRef = React.useRef(null);
   // React.useEffect(() => {
   //   if (open) {
@@ -37,6 +47,19 @@ export default function ProfileDetails({ open, profile, handleSelect, handleClos
   //   }
   // }, [open]);
   console.log(open);
+
+
+
+  const fetchInterests = async () => {
+    try {
+      const response = await axiosInstance.get(`/interests`);
+      if (response.status === 200) {
+        setInterestOption(response.data)
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
   return (
     <React.Fragment>
       <BootstrapDialog
@@ -61,8 +84,42 @@ export default function ProfileDetails({ open, profile, handleSelect, handleClos
           <CloseIcon />
         </IconButton>
         <DialogContent dividers style={{ padding: '20px' }}>
+          <Stack
+            direction={'column'}
+            justifyContent={'center'}
+            alignItems={'center'}
+            mb={1}
+          >
+            <Avatar
+              alt={profile?.name}
+              src={profile?.avatar}
+              style={{ width: 100, height: 100, }} />
+            <Stack my={2} direction={'row'} justifyContent={'center'} alignItems={'center'}>
+              {
+                profile.email_verified ?
+                  <Chip
+                    icon={<VerifiedIcon />}
+                    label="Verified"
+                    variant="outlined"
+                    color='success'
+                  />
+                  :
+                  <Chip
+                    icon={<ErrorIcon />}
+                    label="Not Verified"
+                    variant="outlined"
+                    color='error'
+                  />
+              }
 
-          <Avatar alt={profile.name} src={profile.avatar} style={{ width: 100, height: 100, margin: '0 auto 16px' }} />
+              <Link color="inherit" underline="none" component={RouterLink} to={`/chat/${profile?.id}`}>
+                <Button sx={{ ml: 2 }} color='success' variant="contained" size='small' endIcon={<SendIcon />}>
+                  Send Message
+                </Button>
+              </Link>
+            </Stack>
+          </Stack>
+          <Divider />
 
 
           <Stack direction={'row'} py={1} alignItems={'center'} justifyContent={'space-between'} sx={{
@@ -75,6 +132,37 @@ export default function ProfileDetails({ open, profile, handleSelect, handleClos
               {`${profile.firstname || ''} ${profile.lastname || ''}`}
             </Typography>
           </Stack>
+          <Divider />
+
+
+          <Stack direction={'row'} py={1} alignItems={'center'} justifyContent={'space-between'} sx={{
+            px: { xs: '0px', sm: '50px' }
+          }}>
+            <Typography variant="h6" fontSize={18} >
+              {`Interests:`}
+            </Typography>
+            <Stack direction={'row'} flexWrap={'wrap'} ml={6}>
+              {
+                interestOptions
+                  .filter(item => profile?.interests
+                    ? profile?.interests.includes(item.id)
+                    : false)
+                  .map(
+                    item => (
+                      <Chip
+                        label={item.name}
+                        variant="filled"
+                        color='primary'
+                        sx={{ ml: 1, mb: 1 }}
+                        key={item.id}
+                      />
+                    )
+                  )
+
+              }
+            </Stack>
+          </Stack>
+          <Divider />
 
           <Stack direction={'column'} py={1} alignItems={'flex-start'}
             sx={{

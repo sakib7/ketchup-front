@@ -18,6 +18,8 @@ import ProfileEditBusiness from '../../pages/ProfileEditBusiness.jsx';
 import ProfileEdit from '../../pages/ProfileEdit.jsx';
 import RegisterBusiness from '../../pages/RegisterBusiness.jsx';
 import LoginBusiness from '../../pages/LoginBusiness.jsx';
+import MessageThread from '../../pages/MessageThread.jsx';
+import ChatPage from '../../pages/ChatPage.jsx';
 
 const PrivateRoute = ({ element }) => {
   const { userData, token } = useAuth();
@@ -69,6 +71,12 @@ const AppRouter = () => {
               />
               <Route
                 path="/edit-profile" element={<PrivateRoute element={<ProfileEdit />} />}
+              />
+              <Route
+                path="/chat/:profileId" element={<PrivateRoute element={<MessageThread />} />}
+              />
+              <Route
+                path="/chat" element={<PrivateRoute element={<ChatPage />} />}
               />
               <Route
                 path="/profile-business" element={<BusinessRoute element={<ProfileViewBusiness />} />}

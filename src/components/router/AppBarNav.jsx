@@ -54,7 +54,13 @@ export default function AppBarNav() {
             Ketchups
           </Button> */}
               {/* <Button color="inherit" href='/events' startIcon={<SearchRoundedIcon />}>Explore</Button> */}
-              <Button color="inherit" startIcon={<SMSIcon fontSize='small' />}>Messages</Button>
+              <Link color="inherit" underline="none" component={RouterLink} to="/chat">
+                <Button color={location.pathname === "/chat" ? "customColor" : "inherit"}
+                  startIcon={<SMSIcon fontSize='small' />} >
+                  Messages
+                </Button>
+              </Link>
+              {/* <Button color="inherit" startIcon={<SMSIcon fontSize='small' />}>Messages</Button> */}
               {/* <Button color="inherit" startIcon={<PersonIcon />}>Profile</Button> */}
               <Link color="inherit" underline="none" component={RouterLink} to="/profile">
                 <Button color={location.pathname === "/login"
