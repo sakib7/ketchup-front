@@ -184,7 +184,7 @@ function EventDetails() {
   const LAT = '60.46279367851973', LON = '22.28889103052577';
 
   return (
-    <Container maxWidth="md" sx={{ mb: 6 }}>
+    <Container maxWidth="md" sx={{ mb: 8 }}>
       <Card sx={{ my: 3, mb: 6 }}>
         <Container disableGutters>
           <CardMedia sx={{ height: 200, pl: 5 }} image={event?.image || `https://placehold.co/600x400?text=KetchUp`} title="Event Image" />
