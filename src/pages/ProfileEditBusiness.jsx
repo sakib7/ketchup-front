@@ -390,7 +390,7 @@ const ProfileEditBusiness = () => {
         <Grid item xs={12} >
           <Stack direction='row' justifyContent='center' my={5}>
             <Button variant="contained" color='error' onClick={handleCancel}>
-              Cancel
+              Close
             </Button>
             <Button variant="contained" color='primary' onClick={() => {
               updateAvatar();

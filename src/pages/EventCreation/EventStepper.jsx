@@ -226,8 +226,8 @@ export default function HorizontalLinearStepper({ isEdit }) {
           {activeStep === steps.length ? (
             <Fragment>
               <Typography sx={{ mt: 2, mb: 1 }}>
-                {/* All steps completed - you&apos;re finished */}
-                Something went wrong. Try again please.
+                {/* Something went wrong. Try again please. */}
+                Creating the KetchUp. Please wait.
               </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
                 <Box sx={{ flex: '1 1 auto' }} />

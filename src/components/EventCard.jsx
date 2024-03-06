@@ -52,7 +52,7 @@ export default function EventCard({ event, myEvent, fetch }) {
     <Card sx={{ width: "95%", height: "100%", display: 'flex', flexDirection: 'column' }}>
       <CardMedia
         sx={{ height: 140 }}
-        image={event?.image || `https://source.unsplash.com/random?wallpapers&${event.id}`}
+        image={event?.image || `https://placehold.co/600x400?text=KetchUp`}
         title="green iguana"
       />
       <CardContent style={{ flex: '1' }}>

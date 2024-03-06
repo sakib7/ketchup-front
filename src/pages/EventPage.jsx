@@ -20,6 +20,8 @@ import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import { useAuth } from '../components/auth/AuthContext';
 import parse from 'html-react-parser';
 import ProfileDetails from './ProfileDetails';
+import PlaceDetails from './EventCreation/PlaceDetails';
+import StorefrontIcon from '@mui/icons-material/Storefront';
 
 function EventDetails() {
   const { eventId } = useParams();
@@ -28,6 +30,8 @@ function EventDetails() {
   const [openDetails, setOpenDetails] = useState(false)
   const [clickedProfile, setClickedProfile] = useState({})
   const [interestOptions, setInterestOption] = useState([])
+  const [openDetailsPlace, setOpenDetailsPlace] = useState(false)
+  const [clickedPlace, setClickedPlace] = useState({})
 
   useEffect(() => {
     // const getEventById = async () => {
@@ -52,6 +56,7 @@ function EventDetails() {
       if (response.status === 200) {
         console.log(response.data);
         setEvent(response.data)
+        setClickedPlace(response.data.business)
       }
     } catch (error) {
       console.error(error);
@@ -182,7 +187,7 @@ function EventDetails() {
     <Container maxWidth="md" sx={{ mb: 6 }}>
       <Card sx={{ my: 3, mb: 6 }}>
         <Container disableGutters>
-          <CardMedia sx={{ height: 200, pl: 5 }} image={event?.image || `https://source.unsplash.com/random?wallpapers&${event.id}`} title="Event Image" />
+          <CardMedia sx={{ height: 200, pl: 5 }} image={event?.image || `https://placehold.co/600x400?text=KetchUp`} title="Event Image" />
           <Typography variant="h5" sx={{ mt: 4, mx: 2 }} >
             {event.name}
           </Typography>
@@ -200,6 +205,22 @@ function EventDetails() {
               />
             </Stack>
           </Typography>
+          {
+            event.business &&
+            <Typography variant="subtitle1" component="div" sx={{ mt: 1 }} style={{ display: 'flex', alignItems: 'center' }}>
+              <StorefrontIcon sx={{ mr: 1 }} /> Place:
+              <Stack ml={1} direction="row" spacing={1}>
+                <Chip
+                  avatar={<Avatar alt="Natacha" src={event?.business?.avatar} />}
+                  label={event?.business?.business_profile?.name}
+                  variant="outlined"
+                  onClick={() => setOpenDetailsPlace(true)}
+                  sx={{ border: 0 }}
+                />
+              </Stack>
+
+            </Typography>
+          }
           {formattedDate != 'Invalid Date' &&
             <Typography variant="subtitle1" component="div" sx={{ mt: 1 }} style={{ display: 'flex', alignItems: 'center' }}>
               <AccessTimeRoundedIcon sx={{ mr: 1 }} /> {formattedDate}
@@ -208,9 +229,11 @@ function EventDetails() {
           {
             event.address &&
             <Typography variant="subtitle1" component="div" sx={{ mt: 1 }} style={{ display: 'flex', alignItems: 'center' }}>
-              <PlaceRoundedIcon sx={{ mr: 1 }} /> Place: {event.address}
+              <PlaceRoundedIcon sx={{ mr: 1 }} /> Address: {event.address}
             </Typography>
           }
+
+
 
           <Typography variant="subtitle1" component="div" sx={{ mt: 1 }} style={{ display: 'flex', alignItems: 'center' }}>
             <ClassIcon sx={{ mr: 1 }} /> Type: {getInterestName()}
@@ -315,6 +338,12 @@ function EventDetails() {
                 setPlace(clickedProfile)
               }}
               handleClose={() => { setOpenDetails(false) }}
+            />
+            <PlaceDetails
+              open={openDetailsPlace}
+              place={clickedPlace}
+              handleClose={() => { setOpenDetailsPlace(false) }}
+              action={false}
             />
           </List>
         </CardContent>

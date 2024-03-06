@@ -24,7 +24,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   },
 }));
 
-export default function PlaceDetails({ open, place, handleSelect, handleClose }) {
+export default function PlaceDetails({ open, place, handleSelect, handleClose, action = true }) {
   const [scroll, setScroll] = React.useState('paper');
 
   const descriptionElementRef = React.useRef(null);
@@ -114,11 +114,14 @@ export default function PlaceDetails({ open, place, handleSelect, handleClose })
             </Card>
           }
         </DialogContent>
-        <DialogActions>
-          <Button autoFocus onClick={handleSelect}>
-            Choose this place
-          </Button>
-        </DialogActions>
+        {
+          action &&
+          <DialogActions>
+            <Button autoFocus onClick={handleSelect}>
+              Choose this place
+            </Button>
+          </DialogActions>
+        }
       </BootstrapDialog>
     </React.Fragment >
   );

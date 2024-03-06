@@ -5,6 +5,8 @@ import { useAuth } from '../components/auth/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import parse from 'html-react-parser';
 import axiosInstance from '../components/auth/axiosInstance';
+import VerifiedIcon from '@mui/icons-material/Verified';
+import ErrorIcon from '@mui/icons-material/Error';
 
 const ProfileView = () => {
   const { userData, logout } = useAuth();
@@ -65,8 +67,33 @@ const ProfileView = () => {
         maxWidth: { xs: '95%', sm: '50%' },
         padding: 3,
       }}>
+      <Stack direction={'column'} justifyContent={'center'} alignItems={'center'} >
 
-      <Avatar alt={userProfile.name} src={userRoot.avatar} style={{ width: 100, height: 100, margin: '0 auto 16px' }} />
+        <Avatar
+          alt={userProfile.name}
+          src={userRoot.avatar}
+          style={{ width: 100, height: 100 }} />
+
+
+        {
+          userRoot.email_verified ?
+            <Chip
+              icon={<VerifiedIcon />}
+              label="Verified"
+              variant="outlined"
+              color='success'
+              sx={{ my: 2 }}
+            />
+            :
+            <Chip
+              icon={<ErrorIcon />}
+              label="Not Verified"
+              variant="outlined"
+              color='error'
+              sx={{ my: 2 }}
+            />
+        }
+      </Stack>
       <Divider />
 
 
