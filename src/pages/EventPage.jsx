@@ -308,7 +308,8 @@ function EventDetails() {
                         sx={{ cursor: 'pointer' }}
                         onClick={() => handProfileDetails(item?.user)}
                         primary={`${item?.user?.firstname || ''} ${item?.user?.lastname || ''}`}
-                        secondary={`${item?.user?.email}`} />
+                      // secondary={`${item?.user?.email}`}
+                      />
                     </ListItem>
                   )
                 )
@@ -323,7 +324,8 @@ function EventDetails() {
                         </ListItemAvatar>
                         <ListItemText
                           primary={`${item?.user?.firstname || ''} ${item?.user?.lastname || ''}`}
-                          secondary={`${item?.user?.email}`} />
+                        // secondary={`${item?.user?.email}`}
+                        />
                       </ListItemButton>
                     )
                   )

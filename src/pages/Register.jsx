@@ -14,6 +14,7 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Navigate, Link as RouterLink } from 'react-router-dom';
 import axiosInstance from '../components/auth/axiosInstance';
+import { Alert, Snackbar } from '@mui/material';
 
 function Copyright(props) {
   return (
@@ -34,6 +35,11 @@ const defaultTheme = createTheme();
 
 export default function SignUp() {
   const [registered, setRegistered] = useState(false)
+  const [alert, setAlert] = useState({
+    message: "",
+    severity: "error",
+    open: false
+  });
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -54,12 +60,32 @@ export default function SignUp() {
     try {
       const response = await axiosInstance.post('/register', data);
       if (response.status === 201) {
-        setRegistered(true)
+        setAlert({
+          severity: "success",
+          message: "Successfully Registered!",
+          open: true
+        })
+        setTimeout(() => {
+          setRegistered(true)
+        }, 2000);
       }
 
     } catch (error) {
       console.error('Login failed:', error);
+      setAlert({
+        severity: "error",
+        message: "Registration Failed\t" + error?.response?.data?.message,
+        open: true
+      })
     }
+  };
+
+  const handleClose = () => {
+    setAlert({
+      open: false,
+      message: "",
+      severity: "error",
+    })
   };
 
   return (
@@ -154,6 +180,23 @@ export default function SignUp() {
       {
         registered && <Navigate to={"/login"} />
       }
+
+      <Snackbar
+        open={alert.open}
+        autoHideDuration={2000}
+        onClose={handleClose}
+      >
+        <Alert
+          onClose={handleClose}
+          severity={alert.severity || 'success'}
+          variant="filled"
+          sx={{ width: '100%' }}
+          anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+          key={'top' + 'right'}
+        >
+          {alert.message}
+        </Alert>
+      </Snackbar>
     </ThemeProvider>
   );
 }
