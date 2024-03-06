@@ -75,7 +75,7 @@ const ProfileView = () => {
       sx={{
         mx: 'auto',
         mt: 3,
-        mb: 3,
+        mb: 5,
         maxWidth: { xs: '95%', sm: '40%' },
         padding: 3,
       }}>
