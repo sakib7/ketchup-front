@@ -1,4 +1,4 @@
-import { AppBar, BottomNavigation, BottomNavigationAction, Box, Button, Paper, Stack, ThemeProvider, Toolbar, Typography, createTheme } from '@mui/material';
+import { AppBar, Avatar, BottomNavigation, BottomNavigationAction, Box, Button, Paper, Stack, ThemeProvider, Toolbar, Typography, createTheme } from '@mui/material';
 import GroupRoundedIcon from '@mui/icons-material/GroupRounded';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import SMSIcon from '@mui/icons-material/Sms';
@@ -22,7 +22,10 @@ export default function AppBarNav() {
 
     <AppBar position="relative">
       <Toolbar>
-        <GroupRoundedIcon sx={{ mr: 2 }} />
+        <Avatar
+          sx={{ mr: 1 }}
+          src={'/ketch-up-logo.jpg'}
+          style={{ width: 50, height: 50 }} />
         <Typography variant="h6" color="inherit" sx={{ flexGrow: 1 }}>
           Ketchup
         </Typography>
