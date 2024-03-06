@@ -236,7 +236,7 @@ function EventDetails() {
 
 
           <Typography variant="subtitle1" component="div" sx={{ mt: 1 }} style={{ display: 'flex', alignItems: 'center' }}>
-            <ClassIcon sx={{ mr: 1 }} /> Type: {getInterestName()}
+            <ClassIcon sx={{ mr: 1 }} /> Type: {getInterestName() || "N/A"}
           </Typography>
 
 

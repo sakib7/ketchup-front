@@ -206,7 +206,7 @@ const ProfileEdit = () => {
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  label="Acitivity"
+                  label="Interests"
                   placeholder="Select your interest"
                 />
               )}
