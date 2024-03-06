@@ -246,7 +246,7 @@ const ProfileEditBusiness = () => {
         </Grid>
         <Grid item xs={12} >
           <TextField
-            label="Discount Upto (%)"
+            label="Discount Up to (%)"
             name='discount'
             value={userProfile.discount || ''}
             onChange={handleInputChange}
@@ -297,7 +297,7 @@ const ProfileEditBusiness = () => {
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  label="Acitivity"
+                  label="Interests"
                   placeholder="Select your interest"
                 />
               )}
